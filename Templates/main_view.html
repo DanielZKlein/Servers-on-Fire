@@ -1,0 +1,43 @@
+<html>
+<head>
+<script src="stuff/jquery-1.4.2.min.js"></script>
+<script>
+
+function updateSearch() {
+
+	query = $("#maininput").val();
+	$.getJSON("/serversonfire/ajax/", "query="+query, takeAnswer);
+
+}
+
+function takeAnswer(JSONobj) {
+
+	console.dir(JSONobj);
+	$(".resultrow").remove();
+	for (rowid in JSONobj.reply) {
+	
+		row = JSONobj.reply[rowid];
+		$("#unholy").append("<tr class='resultrow'><td>"+row.english+"</td><td>"+row.french+"</td><td>"+row.german+"</td><td>"+row.spanish+"</td><td>"+row.polish+"</td></tr>");
+	
+	}
+
+}
+
+</script>
+</head>
+
+<body>
+<input id=maininput style="width: 500px;" type=text maxlength=200 onkeyup="updateSearch()">
+<table id=unholy width=100%>
+<colgroup width=20%>
+<colgroup width=20%>
+<colgroup width=20%>
+<colgroup width=20%>
+<colgroup width=20%>
+<tr><td>English</td><td>French</td><td>German</td><td>Spanish</td><td>Polish</td></tr>
+{% for message in messages %}
+<tr class="resultrow"><td>{{message.english}}</td><td>{{message.french}}</td><td>{{message.german}}</td><td>{{message.spanish}}</td><td>{{message.polish}}</td></tr>
+{% endfor %}
+</table>
+</body>
+</html>
