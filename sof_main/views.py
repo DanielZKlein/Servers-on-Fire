@@ -27,8 +27,8 @@ def ajax(request):
 	query = request.GET["query"]
 	terms = shlex.split(query)
 	matches = Message.objects.all()
-	#matches = map(lambda x: x.english, Message.objects.filter(english__icontains = query))
-	matches = Message.objects.filter(english__icontains = query)
+	for term in terms:
+		matches = matches.objects.filter(english__icontains = term)
 	for match in matches:
 		thisRow = {}
 		thisRow["english"] = match.english
