@@ -4,6 +4,7 @@ from sof_main.models import Message
 from datetime import datetime
 import pprint
 import json
+import shlex
 
 def dbug(text):
 	pp = pprint.PrettyPrinter()
@@ -24,6 +25,8 @@ def ajax(request):
 		return False
 	returnObject = {"reply" : []}
 	query = request.GET["query"]
+	terms = shlex.split(query)
+	matches = Message.objects.all()
 	#matches = map(lambda x: x.english, Message.objects.filter(english__icontains = query))
 	matches = Message.objects.filter(english__icontains = query)
 	for match in matches:
