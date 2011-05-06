@@ -27,6 +27,7 @@ def ajax(request):
 	query = request.GET["query"]
 	query = query.encode("ascii", "ignore")
 	terms = shlex.split(query)
+	dbug(terms)
 	matches = Message.objects.all()
 	for term in terms:
 		matches = matches.filter(english__icontains = term)
