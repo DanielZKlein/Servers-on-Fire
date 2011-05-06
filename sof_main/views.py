@@ -25,10 +25,11 @@ def ajax(request):
 		return False
 	returnObject = {"reply" : []}
 	query = request.GET["query"]
+	query = query.encode("ascii", "ignore")
 	terms = shlex.split(query)
 	matches = Message.objects.all()
 	for term in terms:
-		matches = matches.objects.filter(english__icontains = term)
+		matches = matches.filter(english__icontains = term)
 	for match in matches:
 		thisRow = {}
 		thisRow["english"] = match.english
@@ -39,5 +40,31 @@ def ajax(request):
 		returnObject["reply"].append(thisRow)
 		
 	jr = json.dumps(returnObject)
-	dbug(jr)
 	return HttpResponse(jr)
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
