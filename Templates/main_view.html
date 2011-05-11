@@ -65,7 +65,7 @@ Search:
 <colgroup width=20%>
 <tr><th>English</th><th>French</th><th>German</th><th>Spanish</th><th>Polish</th></tr>
 {% for message in messages %}
-<tr class="resultrow"><td>{{message.english}}</td><td>{{message.french}}</td><td>{{message.german}}</td><td>{{message.spanish}}</td><td>{{message.polish}}</td></tr>
+<tr class="resultrow"><td>{{message.english|linebreaks}}</td><td>{{message.french|linebreaks}}</td><td>{{message.german|linebreaks}}</td><td>{{message.spanish|linebreaks}}</td><td>{{message.polish|linebreaks}}</td></tr>
 {% endfor %}
 </table>
 </body>
