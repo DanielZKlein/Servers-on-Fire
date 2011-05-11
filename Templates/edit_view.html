@@ -6,7 +6,7 @@
 
 	.editbox {
 		width:100%;
-		height: 100px;
+		height: 150px;
 	}
 	
 	.underline {
@@ -59,6 +59,10 @@ function takeAnswer(JSONobj) {
 	
 		row = JSONobj.reply[rowid];
 		$("#unholy").append("<tr class='resultrow'><td id='english_"+row.id+"' class='resultfield'>"+row.english+"</td><td id='french_"+row.id+"' class='resultfield'>"+row.french+"</td><td id='german_"+row.id+"' class='resultfield'>"+row.german+"</td><td id='spanish_"+row.id+"' class='resultfield'>"+row.spanish+"</td><td id='polish_"+row.id+"' class='resultfield'>"+row.polish+"</td></tr>");
+	}
+	if (document.scrollDownAfter) {
+		scrollDown();
+		document.scrollDownAfter = false;
 	}
 	bindStuff();
 }
@@ -125,8 +129,9 @@ function bindStuff() {
 
 		$(this).removeClass("resultfield");
 		$(this).click(function() {});
-		$("#" + my_id + "_editbox").focus();
-		scrollDown();
+		
+		ebox = $("#" + my_id + "_editbox");
+		ebox.focus()
 		return false;
 	});
 
@@ -140,8 +145,8 @@ $(function () {
 	$("#addnewmessage").click(function () {
 		$.get("/serversonfire/edit/addnewrow/");
 		$("#maininput").val("");
+		document.scrollDownAfter = true;
 		updateSearch();
-		setTimeout(scrollDown, 500);
 	});
 
 
@@ -181,5 +186,10 @@ Show only messages with missing language:
 </tr>
 {% endfor %}
 </table>
+<br><br><br><br>
+<br><br><br><br>
+
+<br><br><br><br>
+
 </body>
 </html>

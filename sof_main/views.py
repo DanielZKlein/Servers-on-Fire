@@ -1,3 +1,4 @@
+from django.utils.encoding import force_unicode
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.utils.html import linebreaks
@@ -9,14 +10,17 @@ import shlex
 import re
 
 def dbug(text):
-	pp = pprint.PrettyPrinter()
-	fh = open("debuglog.txt", "a")
-	now = datetime.now().strftime("%H:%M:%S")
-	if isinstance(text, str) or isinstance(text, unicode):
-		fh.write(now + " " + text + "\n")
-	else:
-		fh.write(now + ":\n" + pp.pformat(text) + "\n------------\n")
-	fh.close()
+	try:
+		pp = pprint.PrettyPrinter()
+		fh = open("debuglog.txt", "a")
+		now = datetime.now().strftime("%H:%M:%S")
+		if isinstance(text, str) or isinstance(text, unicode):
+			fh.write(now + " " + text + "\n")
+		else:
+			fh.write(now + ":\n" + pp.pformat(text) + "\n------------\n")
+		fh.close()
+	except:
+		pass
 
 def newrow(request):
 	Message.objects.create()
@@ -36,6 +40,7 @@ def takeedit(request):
 	m_id = idres.groups()[1]
 	dbug("lang is " + lang + " and m_id is " + m_id)
 	mes = Message.objects.get(pk=m_id)
+	newtext = force_unicode(request.GET["newtext"])
 	if lang == "english":
 		dbug("english detected. Setting english to " + request.GET["newtext"])
 		mes.english = request.GET["newtext"]
