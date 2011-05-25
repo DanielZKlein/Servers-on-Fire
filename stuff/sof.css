@@ -16,30 +16,32 @@
 		position: absolute;
 		top: 0px;
 		right: 0px;
+		display: none;
 	}
 
 	#maininputdiv {
-		width: 95%;
-		//background-color: #fdd;
-		margin: 10px;
-		text-align: center;
+		color: #FFFFFF;
+		float: left;
 		font-size: 20px;
-		color: #FFF;
+		margin: 75px 0;
+		text-align: center;
+		width: 85%;
 	}
 	
 	#maininput {
-		border: 2px groove #000;
+		border: 2px groove #000000;
+		font-size: 20px;
+		padding-bottom: 3px;
 		padding-left: 5px;
 		padding-top: 3px;
-		padding-bottom: 3px;
-		font-size: 20px;
-		width: 40%;
+		width: 60%;
 	}
 	
 
-	.maintable, .softable {
+	#header , .maintable, .softable {
+		clear: both;
 		margin: auto;
-		width: 90%;
+	width: 90%;
 	}
 	
 	.softable {
