@@ -1,0 +1,37 @@
+	.editbox {
+		width:100%;
+		height: 150px;
+	}
+	
+	#ajaxstatus {
+	
+		position: absolute;
+		top: 0px;
+		right: 0px;
+	
+	}
+	
+	.underline {
+		border-bottom:
+		1px solid black;
+	}
+	.sides {
+		border-right:
+		1px solid black;
+		padding: 5px;
+	}
+	table {
+		width: 100%;
+		border: 1px solid #cef;
+		margin: 1em 25px;
+		text-align: left; }
+	th {
+		font-weight: bold;
+		background-color: #acf;
+		border-bottom: 1px solid #cef; }
+	td,th {
+		padding: 4px 5px; }
+	tr:nth-child(odd) {
+		background-color: #def; }
+	tr:nth-child(odd) td {
+		border-bottom: 1px solid #cef; }  
