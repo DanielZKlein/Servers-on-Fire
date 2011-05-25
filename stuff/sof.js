@@ -45,10 +45,8 @@ function newlines(text) {
 
 function addNewMessage() {
 		$("#maininput").val("");
-		//$.getJSON("/serversonfire/edit/addnewrow/" );
-
+		jsonWrap("/serversonfire/edit/addnewrow/", {}, takeAnswer);
 		document.scrollDownAfter = true;
-		updateSearch();
 
 }
 function takeAnswer(JSONobj) {

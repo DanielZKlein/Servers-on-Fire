@@ -24,7 +24,8 @@ def dbug(text):
 
 def newrow(request):
 	Message.objects.create()
-	return HttpResponse('')
+	ro = ajax(request)
+	return ro
 
 def home(request):
 	return render_to_response("templates/main_view.html", {"messages" : Message.objects.all()})
@@ -68,10 +69,9 @@ def ajax(request):
 	if not request.is_ajax():
 		return False
 	returnObject = {"reply" : []}
-	query = request.GET["query"]
+	query = request.GET.get("query", "")
 	query = query.encode("ascii", "ignore")
 	terms = shlex.split(query)
-	dbug(terms)
 	matches = Message.objects.all()
 	for term in terms:
 		matches = matches.filter(english__icontains = term)
