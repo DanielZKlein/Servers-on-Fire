@@ -81,7 +81,7 @@
 	.softable  th {
 		font-weight: bold;
 		color: black;
-	
+		cursor: pointer;
 	}
 	
 	

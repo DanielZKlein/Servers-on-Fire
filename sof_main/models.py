@@ -1,5 +1,9 @@
 from django.db import models
 
+from django.contrib import admin
+admin.autodiscover()
+
+
 class Message(models.Model):
 	english = models.TextField(blank = True)
 	french = models.TextField(blank = True)
