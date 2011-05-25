@@ -1,4 +1,5 @@
 filter = "all";
+addedNew = false;
 editmode = false;
 
 function dbug(stuff) {
@@ -46,7 +47,7 @@ function newlines(text) {
 function addNewMessage() {
 		$("#maininput").val("");
 		jsonWrap("/serversonfire/edit/addnewrow/", {}, takeAnswer);
-		document.scrollDownAfter = true;
+		document.addedNew = true;
 
 }
 function takeAnswer(JSONobj) {
@@ -56,12 +57,14 @@ function takeAnswer(JSONobj) {
 		row = JSONobj.reply[rowid];
 		$("#unholy").append("<tr class='resultrow'><td id='english_"+row.id+"' class='resultfield'>"+row.english+"</td><td id='french_"+row.id+"' class='resultfield'>"+row.french+"</td><td id='german_"+row.id+"' class='resultfield'>"+row.german+"</td><td id='spanish_"+row.id+"' class='resultfield'>"+row.spanish+"</td><td id='polish_"+row.id+"' class='resultfield'>"+row.polish+"</td></tr>");
 	}
-	if (document.scrollDownAfter) {
-		scrollDown();
-		document.scrollDownAfter = false;
-	}
 	if (document.editmode) {
 		bindStuff();
+	}
+
+	if (document.addedNew) {
+		scrollDown();
+		$("#english_" + row.id).click();
+		document.addedNew = false;
 	}
 }
 
@@ -90,10 +93,13 @@ function bindStuff() {
 		orig_text = $(this).text();
 		$(this).data('original_text', $(this).html());
 		$(this).empty();
-		$(this).append("<textarea id='" + my_id + "_editbox' class='editbox'>" + orig_text + "</textarea><br><input type=button  parentid='" + my_id + "' value='Save' class='savebutton'><input type=button parentid='" + my_id + "' value='Cancel' class='cancelbutton'> <input type=button parentid='"+my_id +"' value='Delete' class='deletebutton'>");
+		$(this).append("<textarea id='" + my_id + "_editbox' class='editbox'>" + orig_text + "</textarea><br><input type=button  parentid='" + my_id + "' value='Save' class='savebutton'><input type=button id='" + my_id + "_cancelbutton' parentid='" + my_id + "' value='Cancel' class='cancelbutton'> <input type=button parentid='"+my_id +"' value='Delete' class='deletebutton'>");
+		ebox = $("#" + my_id + "_editbox");
+		ebox.blur(function () { 
+			$("#" + my_id + "_cancelbutton").click();}
+		);
 		$(".cancelbutton").click(function () {
 			my_id = $(this).attr("parentid");
-			console.log("in cancel function, my_id is " + my_id);
 			field = $("#" + my_id);
 			console.log("field is:");
 			console.log(field);
