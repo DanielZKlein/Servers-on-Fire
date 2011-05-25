@@ -29,18 +29,24 @@ def newrow(request):
 	return ro
 
 def home(request):
-	#return render_to_response("templates/main_view.html", {"messages" : getMsgsWithCats()})
-	return render_to_response("templates/main_view.html", {"messages" : Message.objects.all()})
+	return render_to_response("templates/main_view.html", {"cats" : getMsgsWithCats()})
+	#return render_to_response("templates/main_view.html", {"messages" : Message.objects.all()})
 	
-def getMsgsWithCats(filter = "all", query = ""):
+def getMsgsWithCats(objs = Message.objects.all(), filter = "all", query = ""):
 	# Miaow
 	cursor = connection.cursor()
 	cursor.execute("SELECT DISTINCT category FROM sof_main_message")
 	cats = cursor.fetchall()
 	ro = {}
+	query = query.encode("ascii", "ignore")
+	terms = shlex.split(query)
+	for term in terms:
+		objs = objs.filter(english__icontains = term)
+
 	for cat in cats:
-		msgs = Message.objects.filter(category = cat[0])
+		msgs = objs.filter(category = cat[0])
 		ro[cat[0]] = msgs
+
 	return ro
 	
 def edit(request):
@@ -97,17 +103,26 @@ def ajax(request):
 		matches = matches.filter(spanish__exact = "")
 	elif filter == "polish":
 		matches = matches.filter(polish__exact = "")
-	for match in matches:
+	matches = getMsgsWithCats(objs = matches)
+	for category, messages in matches.iteritems():
+		dbug("going through cat " + category)
 		thisRow = {}
-		thisRow["english"] = linebreaks(match.english)
-		thisRow["french"] = linebreaks(match.french)
-		thisRow["spanish"] = linebreaks(match.spanish)
-		thisRow["german"] = linebreaks(match.german)
-		thisRow["polish"] = linebreaks(match.polish)
-		thisRow["id"] = match.id
+		thisRow["name"] = category
+		thisRow["messages"] = []
+		for msg in messages:
+			dbug("Msg id " + str(msg.id))
+			newRow = {}
+			newRow["english"] = linebreaks(msg.english)
+			newRow["french"] = linebreaks(msg.french)
+			newRow["spanish"] = linebreaks(msg.spanish)
+			newRow["german"] = linebreaks(msg.german)
+			newRow["polish"] = linebreaks(msg.polish)
+			newRow["id"] = msg.id
+			thisRow["messages"].append(newRow)
 		returnObject["reply"].append(thisRow)
 		
 	jr = json.dumps(returnObject)
+	#dbug(jr)
 	return HttpResponse(jr)
 	
 	

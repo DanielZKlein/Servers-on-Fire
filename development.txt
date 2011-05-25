@@ -4,4 +4,4 @@ When I delete an entry, I want that row to be gone and the view refreshed proper
 
 As a non-technical user, I want the messages broken down into categories so I can easily decide what message to select.
 
-While I'm editing a message, I want a click in negative space to count as a cancel
+*While I'm editing a message, I want a click in negative space to count as a cancel

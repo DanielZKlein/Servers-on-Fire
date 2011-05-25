@@ -49,6 +49,9 @@ function jsonWrap(url, dict, cb) {
 }
 
 function updateSearch() {
+	if ($("#ajaxstatus").text() != "synced") {
+		return;
+	}
 	query = $("#maininput").val();
 	//$.getJSON("/serversonfire/ajax/", { query : query, filter: document.filter},  takeAnswer);
 	jsonWrap("/serversonfire/ajax/", {query: query, filter: document.filter}, takeAnswer);
@@ -68,11 +71,20 @@ function addNewMessage() {
 
 }
 function takeAnswer(JSONobj) {
-	$(".resultrow").remove();
+	$("#allcats").empty();
+
 	for (rowid in JSONobj.reply) {
 	
-		row = JSONobj.reply[rowid];
-		$("#unholy").append("<tr class='resultrow'><td id='english_"+row.id+"' class='resultfield'>"+row.english+"</td><td id='french_"+row.id+"' class='resultfield'>"+row.french+"</td><td id='german_"+row.id+"' class='resultfield'>"+row.german+"</td><td id='spanish_"+row.id+"' class='resultfield'>"+row.spanish+"</td><td id='polish_"+row.id+"' class='resultfield'>"+row.polish+"</td></tr>");
+		category = JSONobj.reply[rowid];
+		html = "	<table class='softable' id='cat_"+category.name+"'>	<colgroup width=20%>	<colgroup width=20%>	<colgroup width=20%>	<colgroup width=20%>	<colgroup width=20%>	<tr><th colspan=5 class='cat_toggle' visible='true'>"+category.name+"</th></tr>";
+
+		for (msgid in category.messages) {
+		
+			row = category.messages[msgid];
+					
+			html += "<tr class='result_"+category.name+"'><td id='english_"+row.id+"' class='resultfield'>"+row.english+"</td><td id='french_"+row.id+"' class='resultfield'>"+row.french+"</td><td id='german_"+row.id+"' class='resultfield'>"+row.german+"</td><td id='spanish_"+row.id+"' class='resultfield'>"+row.spanish+"</td><td id='polish_"+row.id+"' class='resultfield'>"+row.polish+"</td></tr>";
+		}
+		$("#allcats").append(html);
 	}
 	bindStuff();
 
@@ -98,6 +110,7 @@ function bindStuff() {
 	$("#maininput").keyup(function (e) {
 		if (e.keyCode == 13 || e.keyCode == 27) {
 			$(this).blur();
+			updateSearch();
 			return;
 		}
 		updateSearch();
@@ -166,9 +179,25 @@ function bindStuff() {
 			return false;
 		});
 	} else {
-	
+		dbug("in else");
 		$(".resultfield").click(function() {
 			selectElementText(document.getElementById($(this).attr("id")), document.window);
+		});
+		$(".cat_toggle").click(function() {
+			dbug("toggling visibility");
+			visible = $(this).attr("visible");
+			if (visible == "true") {
+				$(this).attr("visible", "false");
+				cat = $(this).text();
+				
+				$(".result_" + cat).css("display", "none");
+			} else {
+				$(this).attr("visible", "true");
+				cat = $(this).text();
+				$(".result_" + cat).css("display", "");
+				
+
+			}
 		});
 	
 	}

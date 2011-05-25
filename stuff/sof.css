@@ -30,28 +30,71 @@
 		width: 40%;
 	}
 	
-	#unholy {
+	.softable {
 		width: 95%;
-		margin: 10px;
-		border: outset 3px black;	
+		margin-left: 10px;
+		margin-top: 2em;
+	}
+	.maintable {
+		width: 95%;
+		margin-left: 10px;
 	}
 
-	#unholy th {
+	.maintable  th {
 		font-weight: bold;
 		background-color: black;
 		color: white;
 	}
-	
-	#unholy td,th {
-		padding: 4px 5px; 
+
+	#allcats table:nth-child(odd) {
+		border: 1px solid #d99;
+	}
+
+	#allcats table:nth-child(even) {
+		border: 1px solid #9d9;
 	}
 	
-	#unholy tr:nth-child(odd) {
+	#allcats table {
+		padding: -1px;
+	}
+	
+	#allcats table:nth-child(odd) tr:nth-child(even) {
+		background-color: #fdd;
+		color: black;
+	}
+	
+	#allcats table:nth-child(odd) tr:nth-child(odd) {
+		background-color: #eaa;
+		color: black;
+	}
+	
+	#allcats table:nth-child(even) tr:nth-child(even) {
+		background-color: #dfd;
+		color: black;
+	}
+	
+	#allcats table:nth-child(even) tr:nth-child(odd) {
+		background-color: #aea;
+		color: black;
+	}
+	
+	.softable  th {
+		font-weight: bold;
+		color: black;
+	
+	}
+	
+	
+	.softable  tr:nth-child(even) {
 		background-color: white;
 		color: #a00;
 	}
+
+	td {
+		padding: 4px 5px;
+	}
 	
-	#unholy tr:nth-child(even) {
+	.softable  tr:nth-child(odd) {
 		background-color: black;
 		color: white;
 	}
