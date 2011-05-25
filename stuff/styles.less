@@ -1,0 +1,64 @@
+// variables
+
+@shColor: #000;
+@shadow: 1px 1px 3px 5px @shColor;
+@radius : 5px;
+@gradGreyTop: rgba(66,66,66,0.8);
+@gradGreyBot: rgba(3,3,3,0.8);
+@gradHLTop: rgba(255,255,255,0.0);
+@gradHLBot: rgba(200,200,200,0.1);
+@transBG: url(images/transBG.png);
+@transRed: rgba(180,0,0,0.3);
+@transBGWhite: url(images/gradientWhite.png);
+
+// mixins
+
+.roundCorners (@radius:  5px) {
+  border-radius: @radius;
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+}
+.boxShadow {@shadow} {
+	box-shadow: @shadow;
+	-moz-box-shadow: @shadow;
+	-webkit-box-shadow: @shadow;
+}
+.gradientGrey {
+	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.3, @gradGreyBot), color-stop(0.8, @gradGreyTop));
+	background-image: -moz-linear-gradient(center bottom, @gradGreyBot 30%, @gradGreyTop 80%);
+}
+.gradientHighlite {
+	background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.3, @gradHLBot), color-stop(0.8, @gradHLTop));
+	background-image: -moz-linear-gradient(center bottom, @gradHLBot 30%, @gradHLTop 80%);
+}
+
+// actual CSS
+
+.maintable .gradGrey th {
+	.gradientGrey;
+	padding: 4px 0;
+}
+.gradGrey th:first-child {
+	.roundCorners (5px 0px 0px 5px);
+}
+.gradGrey th:last-child {
+	.roundCorners (0px 5px 5px 0px);
+}
+.softable {
+	.roundCorners;
+	background: @transBG repeat scroll 0 0 transparent;
+}
+.softable td {
+	.roundCorners;
+}
+.softable th {
+	.gradientHighlite;
+	font-size: 1.2em;
+	height: 2em;
+	font-style: italic;
+	text-shadow: #c0c0c0 3px 3px 5px;
+	text-transform: capitalize;
+}
+#allcats table tr:nth-child(even) {
+	background-color: @transRed;
+}
