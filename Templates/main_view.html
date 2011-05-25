@@ -2,53 +2,22 @@
 <head>
 <script src="stuff/jquery-1.4.2.min.js"></script>
 <script src="stuff/sof.js"></script>
-<style type="text/css" media=screen>
-<!--
-	.underline {
-		border-bottom:
-		1px solid black;
-	}
-	.sides {
-		border-right:
-		1px solid black;
-		padding: 5px;
-	}
-	table {
-		width: 100%;
-		border: 1px solid #cef;
-		margin: 1em 25px;
-		text-align: left; }
-	th {
-		font-weight: bold;
-		background-color: #acf;
-		border-bottom: 1px solid #cef; }
-	td,th {
-		padding: 4px 5px; }
-	tr:nth-child(odd) {
-		background-color: #def; }
-	tr:nth-child(odd) td {
-		border-bottom: 1px solid #cef; }  
--->
-</style>
+
+<link rel=stylesheet href="stuff/sof.css">
 <script>
 
 $(function() {
 
-	$("#maininput").keyup(function (e) {
-		if (e.keyCode == 13 || e.keyCode == 27) {
-			$(this).blur();
-			return;
-		}
-		updateSearch();
-	});
+	bindStuff();
 
 });
 </script>
 </head>
 
 <body>
-Search:
-<input id=maininput style="width: 500px;" type=text maxlength=200>
+<div id=maininputdiv>Search for: 
+<input id=maininput type=text >
+</div>
 <table id=unholy width=100%>
 <colgroup width=20%>
 <colgroup width=20%>
@@ -56,8 +25,15 @@ Search:
 <colgroup width=20%>
 <colgroup width=20%>
 <tr><th>English</th><th>French</th><th>German</th><th>Spanish</th><th>Polish</th></tr>
+
 {% for message in messages %}
-<tr class="resultrow"><td>{{message.english|linebreaks}}</td><td>{{message.french|linebreaks}}</td><td>{{message.german|linebreaks}}</td><td>{{message.spanish|linebreaks}}</td><td>{{message.polish|linebreaks}}</td></tr>
+<tr class="resultrow">
+	<td class="resultfield" id="english_{{message.id}}">{{message.english|linebreaks}}</td>
+	<td class="resultfield" id="french_{{message.id}}">{{message.french|linebreaks}}</td>
+	<td class="resultfield" id="german_{{message.id}}">{{message.german|linebreaks}}</td>
+	<td class="resultfield" id="spanish_{{message.id}}">{{message.spanish|linebreaks}}</td>
+	<td class="resultfield" id="polish_{{message.id}}">{{message.polish|linebreaks}}</td>
+</tr>
 {% endfor %}
 </table>
 </body>

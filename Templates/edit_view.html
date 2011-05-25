@@ -5,22 +5,10 @@
 <link rel="stylesheet" href="../stuff/sof.css">
 <script>
 
+document.editmode = true;
+
 $(function () {
-
-	document.editmode = true;
-	$("#maininput").keyup(function (e) {
-		if (e.keyCode == 13 || e.keyCode == 27) {
-			$(this).blur();
-			return;
-		}
-		updateSearch();
-	});
-	
 	bindStuff();
-	scrollUp();
-	$("#addnewmessage").click(addNewMessage);
-
-
 });
 
 	</script>

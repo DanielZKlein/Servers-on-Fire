@@ -1,3 +1,4 @@
+from django.db import connection
 from django.utils.encoding import force_unicode
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.http import HttpResponse
@@ -28,7 +29,19 @@ def newrow(request):
 	return ro
 
 def home(request):
+	#return render_to_response("templates/main_view.html", {"messages" : getMsgsWithCats()})
 	return render_to_response("templates/main_view.html", {"messages" : Message.objects.all()})
+	
+def getMsgsWithCats(filter = "all", query = ""):
+	# Miaow
+	cursor = connection.cursor()
+	cursor.execute("SELECT DISTINCT category FROM sof_main_message")
+	cats = cursor.fetchall()
+	ro = {}
+	for cat in cats:
+		msgs = Message.objects.filter(category = cat[0])
+		ro[cat[0]] = msgs
+	return ro
 	
 def edit(request):
 	return render_to_response("templates/edit_view.html", {"messages" : Message.objects.all()})

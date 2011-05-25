@@ -3,35 +3,55 @@
 		height: 150px;
 	}
 	
-	#ajaxstatus {
+	body {
+		font-family: arial;
+	}
 	
+	#ajaxstatus {
 		position: absolute;
 		top: 0px;
 		right: 0px;
-	
+	}
+
+	#maininputdiv {
+		width: 95%;
+		//background-color: #fdd;
+		margin: 10px;
+		text-align: center;
+		font-size: 20px;
 	}
 	
-	.underline {
-		border-bottom:
-		1px solid black;
+	#maininput {
+		border: 2px groove black;
+		padding-left: 5px;
+		padding-top: 3px;
+		padding-bottom: 3px;
+		font-size: 20px;
+		width: 40%;
 	}
-	.sides {
-		border-right:
-		1px solid black;
-		padding: 5px;
+	
+	#unholy {
+		width: 95%;
+		margin: 10px;
+		border: outset 3px black;	
 	}
-	table {
-		width: 100%;
-		border: 1px solid #cef;
-		margin: 1em 25px;
-		text-align: left; }
-	th {
+
+	#unholy th {
 		font-weight: bold;
-		background-color: #acf;
-		border-bottom: 1px solid #cef; }
-	td,th {
-		padding: 4px 5px; }
-	tr:nth-child(odd) {
-		background-color: #def; }
-	tr:nth-child(odd) td {
-		border-bottom: 1px solid #cef; }  
+		background-color: black;
+		color: white;
+	}
+	
+	#unholy td,th {
+		padding: 4px 5px; 
+	}
+	
+	#unholy tr:nth-child(odd) {
+		background-color: white;
+		color: #a00;
+	}
+	
+	#unholy tr:nth-child(even) {
+		background-color: black;
+		color: white;
+	}
