@@ -1,153 +1,24 @@
 <html>
 <head>
 <script src="../stuff/jquery-1.4.2.min.js"></script>
-<style type="text/css" media=screen>
-<!--
-
-	.editbox {
-		width:100%;
-		height: 150px;
-	}
-	
-	.underline {
-		border-bottom:
-		1px solid black;
-	}
-	.sides {
-		border-right:
-		1px solid black;
-		padding: 5px;
-	}
-	table {
-		width: 100%;
-		border: 1px solid #cef;
-		margin: 1em 25px;
-		text-align: left; }
-	th {
-		font-weight: bold;
-		background-color: #acf;
-		border-bottom: 1px solid #cef; }
-	td,th {
-		padding: 4px 5px; }
-	tr:nth-child(odd) {
-		background-color: #def; }
-	tr:nth-child(odd) td {
-		border-bottom: 1px solid #cef; }  
--->
-</style>
+<script src="../stuff/sof.js"></script>
+<link rel="stylesheet" href="../stuff/sof.css">
 <script>
-
-
-filter = "all";
-
-function updateSearch() {
-	query = $("#maininput").val();
-	$.getJSON("/serversonfire/ajax/", { query : query, filter: document.filter},  takeAnswer);
-}
-
-
-function newlines(text) {
-
-	return text.replace(/\n/g, "<br>");
-
-}
-
-function takeAnswer(JSONobj) {
-	console.dir(JSONobj);
-	$(".resultrow").remove();
-	for (rowid in JSONobj.reply) {
-	
-		row = JSONobj.reply[rowid];
-		$("#unholy").append("<tr class='resultrow'><td id='english_"+row.id+"' class='resultfield'>"+row.english+"</td><td id='french_"+row.id+"' class='resultfield'>"+row.french+"</td><td id='german_"+row.id+"' class='resultfield'>"+row.german+"</td><td id='spanish_"+row.id+"' class='resultfield'>"+row.spanish+"</td><td id='polish_"+row.id+"' class='resultfield'>"+row.polish+"</td></tr>");
-	}
-	if (document.scrollDownAfter) {
-		scrollDown();
-		document.scrollDownAfter = false;
-	}
-	bindStuff();
-}
-
-function scrollDown() {
-	$("body").animate({scrollTop: $("body").height()}, 200);
-}
-
-function scrollUp() {
-	$("body").animate({scrollTop: "0px"}, 200);
-}
-
-
-function bindStuff() {
-	
-	$(".filterbutton").click(function() {
-		document.filter = $(this).val();
-		updateSearch();
-	});
-
-	$(".resultfield").click(function() {
-		if ($(this).data("edit")) {
-			return;
-		} 
-		$(this).data("edit", true);
-		my_id = $(this).attr("id");
-		orig_text = $(this).text();
-		$(this).data('original_text', $(this).html());
-		$(this).empty();
-		$(this).append("<textarea id='" + my_id + "_editbox' class='editbox'>" + orig_text + "</textarea><br><input type=button  parentid='" + my_id + "' value='Save' class='savebutton'><input type=button parentid='" + my_id + "' value='Cancel' class='cancelbutton'> <input type=button parentid='"+my_id +"' value='Delete' class='deletebutton'>");
-		$(".cancelbutton").click(function () {
-			my_id = $(this).attr("parentid");
-			console.log("in cancel function, my_id is " + my_id);
-			field = $("#" + my_id);
-			console.log("field is:");
-			console.log(field);
-			field.empty();
-			field.data("edit", false);
-			field.append(field.data('original_text'));
-			field.addClass("resultfield");
-			return false;
-		});
-		$(".savebutton").click(function () {
-			my_id = $(this).attr("parentid");
-			ebox = $("#" + my_id + "_editbox");
-			new_text = ebox.val();
-			console.log("about to save new text " + new_text + " for " + my_id);
-			//# SEND NEW VALUE TO SERVER
-			$.get("/serversonfire/edit/takeedit/", {newtext : new_text, id : my_id});
-			field = $("#" + my_id);
-			field.empty();
-			field.data("edit", false);
-			field.append(newlines(new_text));
-			field.addClass("resultfield");
-			return false;
-		});
-		$(".deletebutton").click(function () {
-			if (confirm("Are you certain you want to delete this message?")) {
-				my_id = $(this).attr("parentid");
-				$.get("/serversonfire/edit/delete/", {id : my_id});
-				updateSearch();
-			}
-		});
-
-		$(this).removeClass("resultfield");
-		$(this).click(function() {});
-		
-		ebox = $("#" + my_id + "_editbox");
-		ebox.focus()
-		return false;
-	});
-
-
-};
 
 $(function () {
 
-	bindStuff();
-	scrollUp();
-	$("#addnewmessage").click(function () {
-		$.get("/serversonfire/edit/addnewrow/");
-		$("#maininput").val("");
-		document.scrollDownAfter = true;
+	document.editmode = true;
+	$("#maininput").keyup(function (e) {
+		if (e.keyCode == 13 || e.keyCode == 27) {
+			$(this).blur();
+			return;
+		}
 		updateSearch();
 	});
+	
+	bindStuff();
+	scrollUp();
+	$("#addnewmessage").click(addNewMessage);
 
 
 });
@@ -156,8 +27,9 @@ $(function () {
 </head>
 
 <body>
+<div id="ajaxstatus">synced</div>
 Search:
-<input id=maininput style="width: 500px;" type=text maxlength=200 onkeyup="updateSearch()">
+<input id=maininput style="width: 500px;" type=text maxlength=200>
 <br>
 Show only messages with missing language:
 <input type=button value="french" class="filterbutton">

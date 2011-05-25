@@ -1,6 +1,7 @@
 <html>
 <head>
 <script src="stuff/jquery-1.4.2.min.js"></script>
+<script src="stuff/sof.js"></script>
 <style type="text/css" media=screen>
 <!--
 	.underline {
@@ -31,32 +32,23 @@
 </style>
 <script>
 
-function updateSearch() {
+$(function() {
 
-	query = $("#maininput").val();
-	$.getJSON("/serversonfire/ajax/", "query="+query, takeAnswer);
+	$("#maininput").keyup(function (e) {
+		if (e.keyCode == 13 || e.keyCode == 27) {
+			$(this).blur();
+			return;
+		}
+		updateSearch();
+	});
 
-}
-
-function takeAnswer(JSONobj) {
-
-	console.dir(JSONobj);
-	$(".resultrow").remove();
-	for (rowid in JSONobj.reply) {
-	
-		row = JSONobj.reply[rowid];
-		$("#unholy").append("<tr class='resultrow'><td>"+row.english+"</td><td>"+row.french+"</td><td>"+row.german+"</td><td>"+row.spanish+"</td><td>"+row.polish+"</td></tr>");
-	
-	}
-
-}
-
+});
 </script>
 </head>
 
 <body>
 Search:
-<input id=maininput style="width: 500px;" type=text maxlength=200 onkeyup="updateSearch()">
+<input id=maininput style="width: 500px;" type=text maxlength=200>
 <table id=unholy width=100%>
 <colgroup width=20%>
 <colgroup width=20%>
