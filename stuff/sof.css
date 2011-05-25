@@ -5,8 +5,13 @@
 	
 	body {
 		font-family: arial;
+		background: url("images/bodyBg.jpg") no-repeat fixed center top #030615;
 	}
 	
+	#wrapper {
+		margin: auto;
+		width: 98%
+	}
 	#ajaxstatus {
 		position: absolute;
 		top: 0px;
@@ -19,10 +24,11 @@
 		margin: 10px;
 		text-align: center;
 		font-size: 20px;
+		color: #FFF;
 	}
 	
 	#maininput {
-		border: 2px groove black;
+		border: 2px groove #000;
 		padding-left: 5px;
 		padding-top: 3px;
 		padding-bottom: 3px;
@@ -30,20 +36,19 @@
 		width: 40%;
 	}
 	
-	.softable {
-		width: 95%;
-		margin-left: 10px;
-		margin-top: 2em;
+
+	.maintable, .softable {
+		margin: auto;
+		width: 90%;
 	}
-	.maintable {
-		width: 95%;
-		margin-left: 10px;
+	
+	.softable {
+		margin-top: 20px;
 	}
 
 	.maintable  th {
 		font-weight: bold;
-		background-color: black;
-		color: white;
+		color: #FFF;
 	}
 
 	#allcats table:nth-child(odd) {
@@ -54,7 +59,7 @@
 		border: 1px solid #9d9;
 	}
 	
-	#allcats table {
+/*	#allcats table {
 		padding: -1px;
 	}
 	
@@ -77,24 +82,32 @@
 		background-color: #aea;
 		color: black;
 	}
+*/
+	
+	p {
+		color: #FFF;
+	}
 	
 	.softable  th {
 		font-weight: bold;
-		color: black;
+		color: #FFF;
 		cursor: pointer;
 	}
 	
-	
+/*	
 	.softable  tr:nth-child(even) {
 		background-color: white;
 		color: #a00;
 	}
-
+*/
 	td {
 		padding: 4px 5px;
+		border: 1px solid #37383F;
 	}
-	
+/*	
 	.softable  tr:nth-child(odd) {
 		background-color: black;
 		color: white;
 	}
+	
+*/
