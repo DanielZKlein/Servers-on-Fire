@@ -184,12 +184,11 @@ function bindStuff() {
 			selectElementText(document.getElementById($(this).attr("id")), document.window);
 		});
 		$(".cat_toggle").click(function() {
-			dbug("toggling visibility");
+			//dbug("toggling visibility");
 			visible = $(this).attr("visible");
 			if (visible == "true") {
 				$(this).attr("visible", "false");
 				cat = $(this).text();
-				
 				$(".result_" + cat).css("display", "none");
 			} else {
 				$(this).attr("visible", "true");
