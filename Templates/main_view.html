@@ -17,6 +17,7 @@ $(function() {
 
 	bindStuff();
 	$(".cat_toggle").click();
+	checkSync();
 
 });
 </script>
@@ -26,7 +27,7 @@ $(function() {
 <div id="wrapper">
 	<div id="header">
 		<div id="riotLogo"><img src="stuff/images/RiotGamesLogo.png" alt="Riot Games Logo" /></div>
-		<div id="maininputdiv">Search for: 
+		<div id="maininputdiv"><label for="maininput">Search for: </label>
 			<input id="maininput" type="text" />
 		</div>
 		<div id="ajaxstatus">synced</div>

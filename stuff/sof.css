@@ -23,9 +23,10 @@
 		color: #FFFFFF;
 		float: left;
 		font-size: 20px;
-		margin: 75px 0;
+		margin: 75px 200px;
 		text-align: center;
-		width: 85%;
+		padding: 4px 10px;
+		width: 45%;
 	}
 	
 	#maininput {
@@ -34,7 +35,7 @@
 		padding-bottom: 3px;
 		padding-left: 5px;
 		padding-top: 3px;
-		width: 60%;
+		width: 80%;
 	}
 	
 

@@ -1,7 +1,7 @@
 filter = "all";
 addedNew = false;
 editmode = false;
-
+lastSearch = "";
 function selectElementText(el, win) {
 
     win = win || window;
@@ -72,6 +72,7 @@ function addNewMessage() {
 }
 function takeAnswer(JSONobj) {
 	$("#allcats").empty();
+	document.lastSearch = JSONobj.query
 
 	for (rowid in JSONobj.reply) {
 	
@@ -93,6 +94,16 @@ function takeAnswer(JSONobj) {
 		$("#english_" + row.id).click();
 		document.addedNew = false;
 	}
+}
+
+function checkSync() {
+
+	if (document.lastSearch != $("#maininput").val()) {
+		updateSearch();
+		dbug("FORCED SYNC!");
+	} 
+	setTimeout("checkSync()", 1000);
+
 }
 
 function scrollDown() {
@@ -179,7 +190,6 @@ function bindStuff() {
 			return false;
 		});
 	} else {
-		dbug("in else");
 		$(".resultfield").click(function() {
 			selectElementText(document.getElementById($(this).attr("id")), document.window);
 		});
@@ -194,11 +204,7 @@ function bindStuff() {
 				$(this).attr("visible", "true");
 				cat = $(this).text();
 				$(".result_" + cat).css("display", "");
-				
-
 			}
 		});
-	
 	}
-
 };

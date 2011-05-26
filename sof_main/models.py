@@ -11,8 +11,6 @@ class Message(models.Model):
 	spanish = models.TextField(blank = True)
 	polish = models.TextField(blank = True)
 	category = models.CharField(default = "general", max_length = 20)
-	
+
 	def __unicode__(self):
 		return self.english
-
-		

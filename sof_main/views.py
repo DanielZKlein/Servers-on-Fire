@@ -104,6 +104,7 @@ def ajax(request):
 	elif filter == "polish":
 		matches = matches.filter(polish__exact = "")
 	matches = getMsgsWithCats(objs = matches)
+
 	for category, messages in matches.iteritems():
 		dbug("going through cat " + category)
 		thisRow = {}
@@ -120,7 +121,8 @@ def ajax(request):
 			newRow["id"] = msg.id
 			thisRow["messages"].append(newRow)
 		returnObject["reply"].append(thisRow)
-		
+
+	returnObject["query"] = query
 	jr = json.dumps(returnObject)
 	#dbug(jr)
 	return HttpResponse(jr)
