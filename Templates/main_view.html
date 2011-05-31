@@ -47,29 +47,7 @@ $(function() {
 		</tr>
 	</table>
 	<div id="allcats">
-	{% for cat, msgs in cats.items %}
-		<table class="softable" id="cat_{{cat}}">
-		<colgroup>
-			<col width="20%" />
-			<col width="20%" />
-			<col width="20%" />
-			<col width="20%" />
-			<col width="20%" />
-		</colgroup>
-		<tr><th colspan="5" class="cat_toggle" visible="true">{{cat}}</th></tr>
-		
-		{% for message in msgs %}
-			<tr class="result_{{cat}}">
-				<td class="resultfield" id="english_{{message.id}}">{{message.english|linebreaks}}</td>
-				<td class="resultfield" id="french_{{message.id}}">{{message.french|linebreaks}}</td>
-				<td class="resultfield" id="german_{{message.id}}">{{message.german|linebreaks}}</td>
-				<td class="resultfield" id="spanish_{{message.id}}">{{message.spanish|linebreaks}}</td>
-				<td class="resultfield" id="polish_{{message.id}}">{{message.polish|linebreaks}}</td>
-			</tr>
-		{% endfor %}
-		</table>
-		
-	{% endfor %}
+
 	</div>
 </div>
 </body>

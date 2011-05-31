@@ -326,7 +326,7 @@ function bindStuff() {
 				new_text = ebox.val();
 				console.log("about to save new text " + new_text + " for " + my_id);
 				//# SEND NEW VALUE TO SERVER
-				$.get("/serversonfire/takeedit/", {newtext : new_text, id : my_id});
+				JSONwrap("/serversonfire/takeedit/", {newtext : new_text, id : my_id}, takeAnswer);
 				field = $("#" + my_id);
 				field.empty();
 				field.data("edit", false);
