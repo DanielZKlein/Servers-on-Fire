@@ -1,11 +1,30 @@
-langFilter = "";
-blurEvent = false;
-blurId = -1;
-searchTimeout = false;
-keyIsDown = false;
-addedNew = false;
+document.folds = [];
+document.langFilter = "";
+document.blurEvent = false;
+document.blurId = -1;
+document.searchTimeout = false;
+document.keyIsDown = false;
+document.addedNew = false;
 editmode = false;
-lastSearch = "";
+document.lastSearch = "";
+document.allCategories = [];
+
+function popThis(element, array) {
+	returnArr = array.slice(0);
+	for (id in array) {
+		if (array[id] == element) {
+			returnArr.splice(id, 1);
+		}
+	}
+	return returnArr;
+}
+
+
+function changeCategory(id, newCat) {
+
+	jsonWrap("/serversonfire/changecat/", { id : id, newcat : newCat}, takeAnswer);
+
+}
 
 function setFilter(ele) {
 
@@ -13,13 +32,11 @@ function setFilter(ele) {
 	if (lang == document.langFilter) {
 		document.langFilter = "";
 		ele.removeClass("filter_lock");
-		dbug("removed filter for " + lang);
 	} else {
 		oldFilter = document.langFilter;
 		$("#"+oldFilter+"filter").removeClass("filter_lock");
 		document.langFilter = lang;
 		ele.addClass("filter_lock");
-		dbug("changed filter to " + lang);
 	}
 	updateSearch();
 
@@ -27,7 +44,6 @@ function setFilter(ele) {
 
 function doBlur() {
 	my_id = document.blurId;
-	dbug("in doblur with id " + my_id);
 	$("#" + my_id + "_cancelbutton").click();
 
 }
@@ -78,15 +94,15 @@ function dbug(stuff) {
 function jsonWrap(url, dict, cb) {
 
 	$("#ajaxstatus").text("Sending...");
-	dbug("sending...");
+	//dbug("sending...");
 	$.getJSON(url, dict, function(data) {
-		dbug("return received");
+		//dbug("return received");
 		$("#ajaxstatus").text("Thinking...");
 		cb(data);
 		$("#ajaxstatus").text("synced");
 	});
 	$("#ajaxstatus").text("Waiting for sync...");
-	dbug("end of wrap");
+	//dbug("end of wrap");
 
 }
 
@@ -110,46 +126,76 @@ function newlines(text) {
 }
 
 function addCat() {
+	dbug("adding cat");
 	category = prompt("Name the new category");
+	if (!category) {
+		return;
+	}
 	$("#maininput").val("");
 	document.addedNew = true;
+	catForFold = category.replace(/ /g, "-");
+	document.folds[catForFold] = "visible";
 	jsonWrap("/serversonfire/addnewrow/?category=" + category, {}, takeAnswer);
 }
 
 function addNewMessage() {
 	category = $(this).attr("id");
+	catForFolds = category.replace(/ /g, "-");
+	document.folds[catForFolds] = "visible";
+	
 	$("#maininput").val("");
 	document.addedNew = true;
 	jsonWrap("/serversonfire/addnewrow/?category=" + category, {}, takeAnswer);
 }
 
 function takeAnswer(JSONobj) {
-	dbug("taking answer...");
+	//dbug("taking answer...");
 	$("#allcats").empty();
-	document.lastSearch = JSONobj.query
-
+	document.lastSearch = JSONobj.query;
+	tempCategories = [];
 	for (rowid in JSONobj.reply) {
-	
 		category = JSONobj.reply[rowid];
-		html = "	<table class='softable' id='cat_"+category.name+"'>	<colgroup width=20%>	<colgroup width=20%>	<colgroup width=20%>	<colgroup width=20%>	<colgroup width=20%>	<tr><th colspan=5 class='cat_toggle' visible='true'>"+category.name+"</th></tr>";
+		tempCategories.push(category.name);
+		html = "	<table class='softable' id='cat_"+category.name+"'>	<colgroup width=20%>	<colgroup width=20%>	<colgroup width=20%>	<colgroup width=20%>	<colgroup width=20%>	<tr><th colspan=5 class='cat_toggle' visible='true'>"+category.name+" ["+category.numMatches+"]</th></tr>";
 
 		for (msgid in category.messages) {
 		
 			row = category.messages[msgid];
 					
-			html += "<tr class='result_"+category.name+"'><td id='english_"+row.id+"' class='resultfield'>"+row.english+"</td><td id='french_"+row.id+"' class='resultfield'>"+row.french+"</td><td id='german_"+row.id+"' class='resultfield'>"+row.german+"</td><td id='spanish_"+row.id+"' class='resultfield'>"+row.spanish+"</td><td id='polish_"+row.id+"' class='resultfield'>"+row.polish+"</td></tr>";
+			html += "<tr class='result_"+category.name.replace(/ /g, "-") +"'><td id='english_"+row.id+"' class='resultfield'>"+row.english+"</td><td id='french_"+row.id+"' class='resultfield'>"+row.french+"</td><td id='german_"+row.id+"' class='resultfield'>"+row.german+"</td><td id='spanish_"+row.id+"' class='resultfield'>"+row.spanish+"</td><td id='polish_"+row.id+"' class='resultfield'>"+row.polish+"</td></tr>";
 		}
 		html += "<tr><td class='addnewmessage_td' colspan='5'><input type=button value='Add new message in this category' class='addnewmessage' id='" + category.name + "'>";
 		$("#allcats").append(html);
 	}
+	document.allCategories = tempCategories;
+	for (id in tempCategories) {
+		foldCat = tempCategories[id].replace(/ /g, "-");
+		tempFolds = document.folds;
+		//dbug(document.folds);
+		if (!(foldCat in document.folds)) {
+			dbug("adding " + foldCat);
+			document.folds[foldCat] = "invisible";
+			tempFolds = popThis(foldCat, tempFolds);
+		} else {
+			dbug("already in: " + foldCat);
+			tempFolds = popThis(foldCat, tempFolds);
+		}
+	}
+	for (id in tempFolds) {
+		dbug("removing " + id);
+		popCat = tempFolds[id];
+		document.folds = popThis(popCat, document.folds);
+	}
 	bindStuff();
-
+	updateFolds();
 	if (document.addedNew) {
 		newRow = JSONobj.newRow;
 		$("#english_" + newRow).click();
 		document.addedNew = false;
 	}
 }
+
+
 
 function checkSync() {
 
@@ -200,21 +246,11 @@ function bindStuff() {
 	});
 
 	$(".cat_toggle").click(function() {
-		//dbug("toggling visibility");
-		visible = $(this).attr("visible");
-		if (visible == "true") {
-			$(this).attr("visible", "false");
-			cat = $(this).text();
-			$(".result_" + cat).css("display", "none");
-		} else {
-			$(this).attr("visible", "true");
-			cat = $(this).text();
-			$(".result_" + cat).css("display", "");
-		}
+		cat = $(this).text().replace(/ \[.*\]/, "").replace(/ /g, "-");
+		toggleVis(cat);
 	});
 	if (window.editmode) {
-		$("#addcat").click(addCat);
-		dbug("we are edit");
+		//dbug("we are edit");
 		$(".addnewmessage").click(addNewMessage);
 		$(".filterbutton").click(function() {
 			document.filter = $(this).val();
@@ -227,24 +263,47 @@ function bindStuff() {
 			} 
 			$(this).data("edit", true);
 			my_id = $(this).attr("id");
-			dbug("constructing edit view for " + my_id);
+			//dbug("constructing edit view for " + my_id);
 			orig_text = $(this).text();
 			$(this).data('original_text', $(this).html());
 			$(this).empty();
-			$(this).append("<textarea id='" + my_id + "_editbox' class='editbox'>" + orig_text + "</textarea><br><input type=button  parentid='" + my_id + "' value='Save' class='savebutton'><input type=button id='" + my_id + "_cancelbutton' parentid='" + my_id + "' value='Cancel' class='cancelbutton'> <input type=button parentid='"+my_id +"' value='Delete' class='deletebutton'>");
+			newhtml = "<textarea id='" + my_id + "_editbox' class='editbox'>" + orig_text + "</textarea><br><input type=button  parentid='" + my_id + "' value='Save' class='savebutton'><input type=button id='" + my_id + "_cancelbutton' parentid='" + my_id + "' value='Cancel' class='cancelbutton'> <input type=button parentid='"+my_id +"' value='Delete' class='deletebutton'><br><select class='changecat' id='changecat"+my_id+"'>";
+			for (id in document.allCategories) {
+				cat = document.allCategories[id];
+				newhtml = newhtml + "<option value='"+ cat + "'>" + cat + "</option>";
+			}
+			$(this).append(newhtml);
 			ebox = $("#" + my_id + "_editbox");
 			ebox.blur(function () {
 				my_id = $(this).attr("id");
 				my_id = my_id.replace("_editbox", "");
-				dbug("blurring " + my_id);
+				//dbug("blurring " + my_id);
 				document.blurId = my_id;
 				document.blurEvent = setTimeout("doBlur()", 200);
+			});
+			$(".changecat").click(function () {
+			
+				if (document.blurEvent) {
+					clearTimeout(document.blurEvent);
+					document.blurEvent = false;
+				}
+			
+			});
+			$(".changecat").change(function () {
+			
+				newCat = $(this).val();
+				dbug("newcat is " + newCat);
+				fieldId = $(this).attr("id").replace("changecat", "");
+				changeCategory(fieldId, newCat);
+				$("#"+fieldId+"_cancelbutton").click();
+				
+			
 			});
 			$(".cancelbutton").click(function () {
 				if (document.blurEvent) {
 					clearTimeout(document.blurEvent);
 					document.blurEvent = false;
-					dbug("cleared one");
+					//dbug("cleared one");
 				}
 				$(this).blur(function () {});
 				field = $("#" + my_id);
@@ -259,7 +318,7 @@ function bindStuff() {
 					clearTimeout(document.blurEvent);
 					document.blurEvent = false;
 				}			
-				dbug("Save invoked");
+				//dbug("Save invoked");
 				my_id = $(this).attr("parentid");
 				ebox = $("#" + my_id + "_editbox");
 				new_text = ebox.val();
@@ -280,8 +339,8 @@ function bindStuff() {
 				}			
 				if (confirm("Are you certain you want to delete this message?")) {
 					my_id = $(this).attr("parentid");
-					$.get("/serversonfire/delete/", {id : my_id});
-					updateSearch();
+					jsonWrap("/serversonfire/delete/", {id : my_id}, takeAnswer);
+					
 				}
 			});
 
@@ -299,3 +358,33 @@ function bindStuff() {
 		});
 	}
 };
+
+function updateFolds() {
+	dbug("toggling visibility " + document.folds + " $$$");
+	for (cat in document.folds) {
+	
+		dbug("setting " + cat + " to " + document.folds[cat]);
+		if (document.folds[cat] == "visible") {
+		
+			$(".result_" + cat).css("display", "");
+		
+		} else {
+		
+			$(".result_" + cat).css("display", "none");
+		}
+	
+	}
+}
+
+function toggleVis(cat) {
+	if (!document.folds[cat]) {
+		dbug(cat + ' not found');
+		return;
+	}
+	if (document.folds[cat] == "visible") {
+		document.folds[cat] = "invisible";
+	} else {
+		document.folds[cat] = "visible";
+	}
+	updateFolds();
+}

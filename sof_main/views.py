@@ -23,6 +23,17 @@ def dbug(text):
 	except:
 		pass
 
+def changecat(request):
+	newcat = request.GET.get("newcat", "general")
+	id = request.GET.get("id", False)
+	if not id:
+		return
+	id = re.sub(r'^.*_', "", id)
+	msg = Message.objects.get(pk = id)
+	msg.category = newcat
+	msg.save()
+	return ajax(request)
+		
 def newrow(request):
 	dbug("new row!")
 	cat = request.GET.get("category", "general")
@@ -83,12 +94,12 @@ def takeedit(request):
 	return HttpResponse('')
 	
 def deleterow(request):
-	id = request.GET.get("id", False)
+	id = request.GET.get("id", "")
 	idres = re.match("(\w+)_(\d+)", id)
 	m_id = idres.groups()[1]	
 	if id:
 		Message.objects.filter(pk=m_id).delete()
-	return HttpResponse('')
+	return ajax(request)
 	
 def ajax(request):
 	if not request.is_ajax():
@@ -121,6 +132,7 @@ def getMsgsForAjax(query="", filter=""):
 	for category, messages in matches.iteritems():
 		thisRow = {}
 		thisRow["name"] = category
+		thisRow["numMatches"] = len(messages)
 		thisRow["messages"] = []
 		for msg in messages:
 			newRow = {}
