@@ -1,55 +1,87 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<script src="../stuff/jquery-1.4.2.min.js"></script>
-<script src="../stuff/sof.js"></script>
-<!--<link rel="stylesheet" href="../stuff/sof.css">-->
-<script>
+<title>Servers on Fire--EDIT MODE</title>
+<script src="stuff/jquery-1.4.2.min.js" type="text/javascript"></script>
+<script src="stuff/sof.js" type="text/javascript"></script>
 
-document.editmode = true;
+<link rel="stylesheet/less" type="text/css" href="stuff/styles.less" />
+<!-- <link rel="stylesheet" href="stuff/reset.css" type="text/css" /> -->
+<link rel="stylesheet" href="stuff/sof.css" type="text/css" />
 
-$(function () {
+
+
+<script src="stuff/less.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+$(function() {
+
+	window.editmode = true;
 	bindStuff();
-});
+	$(".cat_toggle").click();
+	document.lastSearch = $("#maininput").val();
+	checkSync();
+	$(".langhead").click(function(e) { 
+		setFilter($(this)); 
+		e.stopPropagation(); 
+		return false;
+	});
 
-	</script>
+
+});
+</script>
 </head>
 
 <body>
-<div id="ajaxstatus">synced</div>
-Search:
-<input id=maininput style="width: 500px;" type=text maxlength=200>
-<br>
-Show only messages with missing language:
-<input type=button value="french" class="filterbutton">
-<input type=button value="german" class="filterbutton">
-<input type=button value="spanish" class="filterbutton">
-<input type=button value="polish" class="filterbutton">
-<input type=button value="all" class="filterbutton">
-<table id=unholy width=100%>
-<colgroup width=20%>
-<colgroup width=20%>
-<colgroup width=20%>
-<colgroup width=20%>
-<colgroup width=20%>
-<tr><th>English</th><th>French</th><th>German</th><th>Spanish</th><th>Polish</th></tr>
-<tr>
-<td colspan=5><input value="Add new message" type=button id="addnewmessage"></td>
-</tr>
+<div id="wrapper">
+	<div id="header">
+		<div id="riotLogo"><img src="stuff/images/RiotGamesLogo.png" alt="Riot Games Logo" /></div>
+		<div id="maininputdiv"><label for="maininput">Search for: </label>
+			<input id="maininput" type="text" />
+		</div>
+		<div id="ajaxstatus">synced</div>
+	</div>
+	<input type=button id="addcat" value="Add new category" />
+	<table class="maintable" width="100%">
+		<colgroup>
+			<col width="20%" />
+			<col width="20%" />
+			<col width="20%" />
+			<col width="20%" />
+			<col width="20%" />
+		</colgroup>
+		<tr class="gradGrey">
+			<th class="langhead" id="englishfilter">English</th><th class="langhead" id="frenchfilter">French</th><th class="langhead" id="germanfilter">German</th><th class="langhead" id="spanishfilter">Spanish</th><th class="langhead" id="polishfilter">Polish</th>
+		</tr>
+	</table>
+	<div id="allcats">
+	{% for cat, msgs in cats.items %}
+		<table class="softable" id="cat_{{cat}}">
+		<colgroup>
+			<col width="20%" />
+			<col width="20%" />
+			<col width="20%" />
+			<col width="20%" />
+			<col width="20%" />
+		</colgroup>
+		<tr><th colspan="5" class="cat_toggle" visible="true">{{cat}}</th></tr>
+		
+		{% for message in msgs %}
+			<tr class="result_{{cat}}">
+				<td class="resultfield" id="english_{{message.id}}">{{message.english|linebreaks}}</td>
+				<td class="resultfield" id="french_{{message.id}}">{{message.french|linebreaks}}</td>
+				<td class="resultfield" id="german_{{message.id}}">{{message.german|linebreaks}}</td>
+				<td class="resultfield" id="spanish_{{message.id}}">{{message.spanish|linebreaks}}</td>
+				<td class="resultfield" id="polish_{{message.id}}">{{message.polish|linebreaks}}</td>
+			</tr>
+		{% endfor %}
+		<tr><td class="addnewmessage_td" colspan="5"><input type=button class="addnewmessage" id="{{cat}}" value="Add new message in this category">
 
-{% for message in messages %}
-<tr class="resultrow">
-	<td class="resultfield" id="english_{{message.id}}">{{message.english|linebreaks}}</td>
-	<td class="resultfield" id="french_{{message.id}}">{{message.french|linebreaks}}</td>
-	<td class="resultfield" id="german_{{message.id}}">{{message.german|linebreaks}}</td>
-	<td class="resultfield" id="spanish_{{message.id}}">{{message.spanish|linebreaks}}</td>
-	<td class="resultfield" id="polish_{{message.id}}">{{message.polish|linebreaks}}</td>
-</tr>
-{% endfor %}
-</table>
-<br><br><br><br>
-<br><br><br><br>
-
-<br><br><br><br>
-
+		</table>
+		
+	{% endfor %}
+	</div>
+</div>
 </body>
 </html>

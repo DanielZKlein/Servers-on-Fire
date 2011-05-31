@@ -16,7 +16,9 @@
 		position: absolute;
 		top: 0px;
 		right: 0px;
-		display: none;
+		font-size: 14px;
+		color: white;
+		font-weight: bold;
 	}
 
 	#maininputdiv {
@@ -114,3 +116,16 @@
 	}
 	
 */
+
+	.addnewmessage_td {
+	
+		background-color: black;
+		text-align: center;
+	
+	}
+
+	.filter_lock {
+	
+		border: 2px solid red;
+		
+	}

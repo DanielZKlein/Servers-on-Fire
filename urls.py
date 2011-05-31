@@ -8,10 +8,9 @@ urlpatterns = patterns('',
 	url(r'^serversonfire/ajax/$', 'serversonfire.sof_main.views.ajax'),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
-	url(r'^serversonfire/edit/$', 'serversonfire.sof_main.views.edit'),
-	url(r'^serversonfire/edit/takeedit/$', 'serversonfire.sof_main.views.takeedit'),
-	url(r'^serversonfire/edit/addnewrow/$', 'serversonfire.sof_main.views.newrow'),
-	url(r'^serversonfire/edit/delete/$', 'serversonfire.sof_main.views.deleterow'),
+	url(r'^serversonfire/takeedit/$', 'serversonfire.sof_main.views.takeedit'),
+	url(r'^serversonfire/addnewrow/$', 'serversonfire.sof_main.views.newrow'),
+	url(r'^serversonfire/delete/$', 'serversonfire.sof_main.views.deleterow'),
 )
 
 urlpatterns = urlpatterns + patterns('',

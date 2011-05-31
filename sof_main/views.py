@@ -24,13 +24,24 @@ def dbug(text):
 		pass
 
 def newrow(request):
-	Message.objects.create()
-	ro = ajax(request)
-	return ro
+	dbug("new row!")
+	cat = request.GET.get("category", "general")
+	newMessage = Message.objects.create()
+	newMessage.category = cat
+	newMessage.save()
+	ro = getMsgsForAjax() # newrow has no filters or query... for now
+	ro["newRow"] = newMessage.id
+	jDump = json.dumps(ro)
+	
+	return HttpResponse(jDump)
 
 def home(request):
-	return render_to_response("templates/main_view.html", {"cats" : getMsgsWithCats()})
-	#return render_to_response("templates/main_view.html", {"messages" : Message.objects.all()})
+	edit = request.GET.get("edit", False)
+	sd = {"cats" : getMsgsWithCats()}
+	if edit:
+		return render_to_response("templates/edit_view.html", sd)
+	else:
+		return render_to_response("templates/main_view.html", sd)
 	
 def getMsgsWithCats(objs = Message.objects.all(), filter = "all", query = ""):
 	# Miaow
@@ -49,16 +60,12 @@ def getMsgsWithCats(objs = Message.objects.all(), filter = "all", query = ""):
 
 	return ro
 	
-def edit(request):
-	return render_to_response("templates/edit_view.html", {"messages" : Message.objects.all()})
 
 def takeedit(request):
-	dbug("taking edit")
 	id = request.GET["id"]
 	idres = re.match("(\w+)_(\d+)", id)
 	lang = idres.groups()[0]
 	m_id = idres.groups()[1]
-	dbug("lang is " + lang + " and m_id is " + m_id)
 	mes = Message.objects.get(pk=m_id)
 	newtext = force_unicode(request.GET["newtext"])
 	if lang == "english":
@@ -72,7 +79,6 @@ def takeedit(request):
 		mes.spanish = request.GET["newtext"]
 	elif lang == "polish":
 		mes.polish = request.GET["newtext"]
-	dbug("saving")
 	mes.save()
 	return HttpResponse('')
 	
@@ -86,15 +92,22 @@ def deleterow(request):
 	
 def ajax(request):
 	if not request.is_ajax():
+		dbug("DENIED")
 		return False
-	returnObject = {"reply" : []}
 	query = request.GET.get("query", "")
+	filter = request.GET.get("filter", "")
+	returnObject = getMsgsForAjax(query = query, filter = filter)
+	jr = json.dumps(returnObject)
+	#dbug(jr)
+	return HttpResponse(jr)
+	
+def getMsgsForAjax(query="", filter=""):
+	returnObject = {"reply" : []}
 	query = query.encode("ascii", "ignore")
 	terms = shlex.split(query)
 	matches = Message.objects.all()
 	for term in terms:
 		matches = matches.filter(english__icontains = term)
-	filter = request.GET.get("filter", "")
 	if filter == "french":
 		matches = matches.filter(french__exact = "")
 	elif filter == "german":
@@ -106,12 +119,10 @@ def ajax(request):
 	matches = getMsgsWithCats(objs = matches)
 
 	for category, messages in matches.iteritems():
-		dbug("going through cat " + category)
 		thisRow = {}
 		thisRow["name"] = category
 		thisRow["messages"] = []
 		for msg in messages:
-			dbug("Msg id " + str(msg.id))
 			newRow = {}
 			newRow["english"] = linebreaks(msg.english)
 			newRow["french"] = linebreaks(msg.french)
@@ -123,11 +134,8 @@ def ajax(request):
 		returnObject["reply"].append(thisRow)
 
 	returnObject["query"] = query
-	jr = json.dumps(returnObject)
-	#dbug(jr)
-	return HttpResponse(jr)
-	
-	
+	return returnObject
+
 	
 	
 	

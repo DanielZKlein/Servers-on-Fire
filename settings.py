@@ -1,6 +1,7 @@
 # Django settings for serversonfire project.
 
 DEBUG = True
+DEBUG_PROPAGATE_EXCEPTIONS = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
