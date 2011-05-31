@@ -15,10 +15,11 @@
 
 $(function() {
 
+	window.editmode = false;
 	bindStuff();
-	$(".cat_toggle").click();
 	document.lastSearch = $("#maininput").val();
 	checkSync();
+	updateSearch();
 
 });
 </script>

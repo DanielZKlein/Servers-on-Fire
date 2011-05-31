@@ -164,7 +164,9 @@ function takeAnswer(JSONobj) {
 					
 			html += "<tr class='result_"+category.name.replace(/ /g, "-") +"'><td id='english_"+row.id+"' class='resultfield'>"+row.english+"</td><td id='french_"+row.id+"' class='resultfield'>"+row.french+"</td><td id='german_"+row.id+"' class='resultfield'>"+row.german+"</td><td id='spanish_"+row.id+"' class='resultfield'>"+row.spanish+"</td><td id='polish_"+row.id+"' class='resultfield'>"+row.polish+"</td></tr>";
 		}
-		html += "<tr><td class='addnewmessage_td' colspan='5'><input type=button value='Add new message in this category' class='addnewmessage' id='" + category.name + "'>";
+		if (window.editmode) { 
+			html += "<tr><td class='addnewmessage_td' colspan='5'><input type=button value='Add new message in this category' class='addnewmessage' id='" + category.name + "'>";
+		}
 		$("#allcats").append(html);
 	}
 	document.allCategories = tempCategories;
