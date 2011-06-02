@@ -156,7 +156,7 @@ function takeAnswer(JSONobj) {
 	for (rowid in JSONobj.reply) {
 		category = JSONobj.reply[rowid];
 		tempCategories.push(category.name);
-		html = "	<table class='softable' id='cat_"+category.name+"'>	<colgroup width=20%>	<colgroup width=20%>	<colgroup width=20%>	<colgroup width=20%>	<colgroup width=20%>	<tr><th colspan=5 class='cat_toggle' visible='true'>"+category.name+" ["+category.numMatches+"]</th></tr>";
+		html = "	<table class='softable' id='cat_"+category.name+"'>	<colgroup width='20%'>	<colgroup width='20%'>	<colgroup width='20%'>	<colgroup width='20%'>	<colgroup width='20%'>	<tr><th colspan=5 class='cat_toggle' visible='true'>"+category.name+" ["+category.numMatches+"]</th></tr>";
 
 		for (msgid in category.messages) {
 		
@@ -165,7 +165,7 @@ function takeAnswer(JSONobj) {
 			html += "<tr class='result_"+category.name.replace(/ /g, "-") +"'><td id='english_"+row.id+"' class='resultfield'>"+row.english+"</td><td id='french_"+row.id+"' class='resultfield'>"+row.french+"</td><td id='german_"+row.id+"' class='resultfield'>"+row.german+"</td><td id='spanish_"+row.id+"' class='resultfield'>"+row.spanish+"</td><td id='polish_"+row.id+"' class='resultfield'>"+row.polish+"</td></tr>";
 		}
 		if (window.editmode) { 
-			html += "<tr><td class='addnewmessage_td' colspan='5'><input type=button value='Add new message in this category' class='addnewmessage' id='" + category.name + "'>";
+			html += "<tr><td class='addnewmessage_td' colspan='5'><input type=button value='Add new message in this category' class='addnewmessage styleButton' id='" + category.name + "'>";
 		}
 		$("#allcats").append(html);
 	}
@@ -269,7 +269,7 @@ function bindStuff() {
 			orig_text = $(this).text();
 			$(this).data('original_text', $(this).html());
 			$(this).empty();
-			newhtml = "<textarea id='" + my_id + "_editbox' class='editbox'>" + orig_text + "</textarea><br><input type=button  parentid='" + my_id + "' value='Save' class='savebutton'><input type=button id='" + my_id + "_cancelbutton' parentid='" + my_id + "' value='Cancel' class='cancelbutton'> <input type=button parentid='"+my_id +"' value='Delete' class='deletebutton'><br><select class='changecat' id='changecat"+my_id+"'>";
+			newhtml = "<textarea id='" + my_id + "_editbox' class='editbox'>" + orig_text + "</textarea><br><input type=button  parentid='" + my_id + "' value='Save' class='savebutton styleButton'><input type=button id='" + my_id + "_cancelbutton' parentid='" + my_id + "' value='Cancel' class='cancelbutton styleButton'> <input type=button parentid='"+my_id +"' value='Delete' class='deletebutton styleButton'><br><select class='changecat' id='changecat"+my_id+"'>";
 			for (id in document.allCategories) {
 				cat = document.allCategories[id];
 				newhtml = newhtml + "<option value='"+ cat + "'>" + cat + "</option>";
