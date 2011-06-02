@@ -91,7 +91,7 @@ def takeedit(request):
 	elif lang == "polish":
 		mes.polish = request.GET["newtext"]
 	mes.save()
-	return HttpResponse('')
+	return ajax(request)
 	
 def deleterow(request):
 	id = request.GET.get("id", "")
