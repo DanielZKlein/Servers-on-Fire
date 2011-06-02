@@ -1,7 +1,5 @@
 document.folds = [];
 document.langFilter = "";
-document.blurEvent = false;
-document.blurId = -1;
 document.searchTimeout = false;
 document.keyIsDown = false;
 document.addedNew = false;
@@ -39,12 +37,6 @@ function setFilter(ele) {
 		ele.addClass("filter_lock");
 	}
 	updateSearch();
-
-}
-
-function doBlur() {
-	my_id = document.blurId;
-	$("#" + my_id + "_cancelbutton").click();
 
 }
 
@@ -275,22 +267,6 @@ function bindStuff() {
 				newhtml = newhtml + "<option value='"+ cat + "'>" + cat + "</option>";
 			}
 			$(this).append(newhtml);
-			ebox = $("#" + my_id + "_editbox");
-			ebox.blur(function () {
-				my_id = $(this).attr("id");
-				my_id = my_id.replace("_editbox", "");
-				//dbug("blurring " + my_id);
-				document.blurId = my_id;
-				document.blurEvent = setTimeout("doBlur()", 200);
-			});
-			$(".changecat").click(function () {
-			
-				if (document.blurEvent) {
-					clearTimeout(document.blurEvent);
-					document.blurEvent = false;
-				}
-			
-			});
 			$(".changecat").change(function () {
 			
 				newCat = $(this).val();
@@ -302,12 +278,8 @@ function bindStuff() {
 			
 			});
 			$(".cancelbutton").click(function () {
-				if (document.blurEvent) {
-					clearTimeout(document.blurEvent);
-					document.blurEvent = false;
-					//dbug("cleared one");
-				}
-				$(this).blur(function () {});
+				my_id = $(this).attr("parentid");
+				dbug("my_id is " + my_id);
 				field = $("#" + my_id);
 				field.empty();
 				field.data("edit", false);
@@ -316,17 +288,13 @@ function bindStuff() {
 				return false;
 			});
 			$(".savebutton").click(function () {
-				if (document.blurEvent) {
-					clearTimeout(document.blurEvent);
-					document.blurEvent = false;
-				}			
 				//dbug("Save invoked");
 				my_id = $(this).attr("parentid");
 				ebox = $("#" + my_id + "_editbox");
 				new_text = ebox.val();
 				console.log("about to save new text " + new_text + " for " + my_id);
 				//# SEND NEW VALUE TO SERVER
-				JSONwrap("/serversonfire/takeedit/", {newtext : new_text, id : my_id}, takeAnswer);
+				jsonWrap("/serversonfire/takeedit/", {newtext : new_text, id : my_id}, takeAnswer);
 				field = $("#" + my_id);
 				field.empty();
 				field.data("edit", false);
@@ -335,10 +303,6 @@ function bindStuff() {
 				return false;
 			});
 			$(".deletebutton").click(function () {
-				if (document.blurEvent) {
-					clearTimeout(document.blurEvent);
-					document.blurEvent = false;
-				}			
 				if (confirm("Are you certain you want to delete this message?")) {
 					my_id = $(this).attr("parentid");
 					jsonWrap("/serversonfire/delete/", {id : my_id}, takeAnswer);
