@@ -148,7 +148,11 @@ function takeAnswer(JSONobj) {
 	for (rowid in JSONobj.reply) {
 		category = JSONobj.reply[rowid];
 		tempCategories.push(category.name);
-		html = "	<table class='softable' id='cat_"+category.name+"'>	<colgroup width='20%'>	<colgroup width='20%'>	<colgroup width='20%'>	<colgroup width='20%'>	<colgroup width='20%'>	<tr><th colspan=5 class='cat_toggle' visible='true'>"+category.name+" ["+category.numMatches+"]</th></tr>";
+		resString = "results";
+		if (category.numMatches == 1) {
+			resString = "result";
+		}
+		html = "	<table class='softable' id='cat_"+category.name+"'>	<colgroup width='20%'>	<colgroup width='20%'>	<colgroup width='20%'>	<colgroup width='20%'>	<colgroup width='20%'>	<tr><th colspan=5 class='cat_toggle' myname='"+category.name+"' visible='true'>"+category.name+"</th></tr><tr class='numresults'><td colspan=5 align='center'>"+category.numMatches+" results found</td></tr>";
 
 		for (msgid in category.messages) {
 		
@@ -240,7 +244,8 @@ function bindStuff() {
 	});
 
 	$(".cat_toggle").click(function() {
-		cat = $(this).text().replace(/ \[.*\]/, "").replace(/ /g, "-");
+		cat = $(this).attr("myname").replace(/ /g, "-");
+		//cat = $(this).text().replace(/ \[.*\]/, "").replace(/ /g, "-");
 		toggleVis(cat);
 	});
 	if (window.editmode) {
@@ -294,7 +299,7 @@ function bindStuff() {
 				new_text = ebox.val();
 				console.log("about to save new text " + new_text + " for " + my_id);
 				//# SEND NEW VALUE TO SERVER
-				jsonWrap("/serversonfire/takeedit/", {newtext : new_text, id : my_id}, takeAnswer);
+				jsonWrap("/serversonfire/takeedit/", {newtext : new_text, filter: document.langFilter, id : my_id}, takeAnswer);
 				field = $("#" + my_id);
 				field.empty();
 				field.data("edit", false);
