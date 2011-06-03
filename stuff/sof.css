@@ -78,3 +78,9 @@ input[type="button"] {
 	color: white;
 	font-weight: bold;
 }
+
+.langhead {
+
+	cursor: pointer;
+	
+}
