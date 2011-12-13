@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import *
+from django.conf import settings
 
 from django.contrib import admin
 admin.autodiscover()
@@ -15,5 +16,6 @@ urlpatterns = patterns('',
 )
 
 urlpatterns = urlpatterns + patterns('',
-	(r'^stuff/(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/var/www/html/sof/serversonfire/stuff'}),
+	#(r'^stuff/(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/var/www/html/sof/serversonfire/stuff'}),
+	(r'^stuff/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
 )

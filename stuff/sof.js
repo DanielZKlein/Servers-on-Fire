@@ -20,7 +20,7 @@ function popThis(element, array) {
 
 function changeCategory(id, newCat) {
 
-	jsonWrap("/serversonfire/changecat/", { id : id, newcat : newCat}, takeAnswer);
+	jsonWrap("/changecat/", { id : id, newcat : newCat}, takeAnswer);
 
 }
 
@@ -103,7 +103,7 @@ function updateSearch() {
 		return;
 	}
 	query = $("#maininput").val();
-	jsonWrap("/serversonfire/ajax/", {query: query, filter: document.langFilter}, takeAnswer);
+	jsonWrap("/ajax/", {query: query, filter: document.langFilter}, takeAnswer);
 }
 
 
@@ -127,7 +127,7 @@ function addCat() {
 	document.addedNew = true;
 	catForFold = category.replace(/ /g, "-");
 	document.folds[catForFold] = "visible";
-	jsonWrap("/serversonfire/addnewrow/?category=" + category, {}, takeAnswer);
+	jsonWrap("/addnewrow/?category=" + category, {}, takeAnswer);
 }
 
 function addNewMessage() {
@@ -137,7 +137,7 @@ function addNewMessage() {
 	
 	$("#maininput").val("");
 	document.addedNew = true;
-	jsonWrap("/serversonfire/addnewrow/?category=" + category, {}, takeAnswer);
+	jsonWrap("/addnewrow/?category=" + category, {}, takeAnswer);
 }
 
 function takeAnswer(JSONobj) {
@@ -299,7 +299,7 @@ function bindStuff() {
 				new_text = ebox.val();
 				console.log("about to save new text " + new_text + " for " + my_id);
 				//# SEND NEW VALUE TO SERVER
-				jsonWrap("/serversonfire/takeedit/", {newtext : new_text, filter: document.langFilter, id : my_id}, takeAnswer);
+				jsonWrap("/takeedit/", {newtext : new_text, filter: document.langFilter, id : my_id}, takeAnswer);
 				field = $("#" + my_id);
 				field.empty();
 				field.data("edit", false);
@@ -310,7 +310,7 @@ function bindStuff() {
 			$(".deletebutton").click(function () {
 				if (confirm("Are you certain you want to delete this message?")) {
 					my_id = $(this).attr("parentid");
-					jsonWrap("/serversonfire/delete/", {id : my_id}, takeAnswer);
+					jsonWrap("/delete/", {id : my_id}, takeAnswer);
 					
 				}
 			});

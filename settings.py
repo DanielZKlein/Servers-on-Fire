@@ -46,7 +46,9 @@ USE_L10N = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = ''
+# DANIEL: this is also the dir from which I serve my statics for SOF. Please flip to the linux path for deployment
+#MEDIA_ROOT = '/var/www/html/sof/serversonfire/stuff'
+MEDIA_ROOT = 'c:/code/sof/serversonfire/stuff'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
