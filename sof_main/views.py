@@ -6,7 +6,8 @@ from django.utils.html import linebreaks
 from sof_main.models import Message
 from datetime import datetime
 import pprint
-import json
+#import json
+from django.utils import simplejson as json
 import shlex
 import re
 
