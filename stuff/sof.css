@@ -1,86 +1,180 @@
-.editbox {
-	width:100%;
-	height: 150px;
-}
-body {
-	font-family: arial;
-	background: url("images/bodyBg.jpg") no-repeat fixed center top #030615;
-}	
-#wrapper {
-	margin: auto;
-	width: 98%
-}
 #ajaxstatus {
-	position: fixed;
-	top: 10px;
-	right: 30px;
-	font-size: 14px;
-	color: white;
-	font-weight: bold;
+position: fixed;
+top: 0px; 
+right: 0px;
 }
+
+body { 
+overflow-x: hidden;
+font-family: arial;
+margin: 0px;
+padding: 0px 8px 8px 0px;
+height: 1000px;
+overflow: hidden;
+}
+.trans {
+display: none;
+}
+
+#maininputdiv , #maininput{
+font-size: 14pt;
+}
+
+#header {
+padding-left: 8px;
+margin-bottom: 50px;
+}
+
+#maininputinfo {
+vertical-align: middle;
+padding-left: 15px;
+}
+
 #maininputdiv {
-	color: #FFFFFF;
-	float: left;
-	font-size: 20px;
-	margin: 75px 200px;
-	text-align: center;
-	padding: 4px 10px;
-	width: 45%;
+position: absolute;
+right: 0px;
+padding-left: 18px;
+padding-right: 18px;
+padding-top: 4px;
+padding-bottom: 4px;
+background-color: #BF0404;
+color: white;
+text-align: center;
+font-family: tahoma;
+font-size: 16pt;
+border: 4px solid white;
+border-right: 0px;
+border-top-left-radius: 10px;
+border-bottom-left-radius: 10px;
 }
+
 #maininput {
-	border: 2px groove #000000;
-	font-size: 20px;
-	padding-bottom: 3px;
-	padding-left: 5px;
-	padding-top: 3px;
-	width: 80%;
+width: 600px;
 }
-#header , .maintable, .softable, #newCat {
-	clear: both;
-	margin: auto;
-	width: 90%;
+
+.fw {
+font-family: courier;
 }
-.softable, #newCat {
-	margin-top: 20px;
+
+.result {
+margin-left: 50px;
+margin-right: 50px;
+padding: 10px;
+border-bottom: 1px solid black;
+
 }
-#newCat {
-	text-align: center;
-}
-.maintable  th {
-	font-weight: bold;
-	color: #FFF;
-}
+
 p {
-	color: #FFF;
-}
-.softable  th {
-	font-weight: bold;
-	color: #FFF;
-	cursor: pointer;
-}
-td {
-	padding: 4px 5px;
-	border: 1px solid #37383F;
-}
-.addnewmessage_td {
-	text-align: center;
-}
-#riotLogo {
-	float: left;
+margin-top: 0px;
+margin-bottom: 0px;
 }
 
-input[type="button"] {
-	cursor: pointer;
+.trans  {
+border-spacing: 0px;
 }
 
-.numresults {
-
-	color: white;
-	font-weight: bold;
+.translation {
+padding: 15px;
 }
 
-.langhead {
+.translang {
+padding-left: 20px;
+}
 
-	cursor: pointer;
-	
+.transrow:nth-child(even) {
+background-color: #F0F0F0;
+}
+
+.transrow:nth-child(odd) {
+background-color: #E5E5E5;
+}
+
+.trans {
+padding-top: 10px;
+}
+
+.translation {
+padding-left: 20px;
+}
+
+.guidestep {
+text-align: center;
+font-family: tahoma;
+font-size: 14pt;
+font-weight: bold;
+background-color: #FF8300;
+color: white;
+border-bottom: 3px solid #590202;
+border-left: 3px solid #590202;
+border-right: 3px solid #590202;
+border-bottom-left-radius: 10px;
+border-bottom-right-radius: 10px;
+width: 400px;
+padding: 8px;
+margin-top:0px;
+}
+
+.result:nth-child(odd) {
+}
+
+.result:nth-child(even) {
+}
+
+.cat_toggle {
+font-size: 14pt;
+font-weight: bold;
+color: white;
+margin: 10px;
+background-color: #BF0404;
+padding: 4px 0px 4px 2px;
+}
+
+.catdeselected {
+
+border: 2px outset #FFF0F0;
+}
+
+.catselected {
+
+border: 2px inset #FFF0F0;
+
+}
+
+
+#wrapper {
+height: 60%;
+float: left;
+width: 100%;
+
+overflow-y: scroll;
+overflow-x: hidden;
+}
+
+#allcats {
+padding-left: 8px;
+}
+
+#stagingarea {
+padding-left: 8px;
+height: 40%;
+float: left;
+width: 100%;
+border-top: 3px solid #590202;
+background-color: #FFF0F0;
+text-align: center;
+vertical-align: middle;
+}
+
+.guidestepinactive {
+
+background-color: #999;
+
+}
+
+#tempstaging {
+font-family: tahoma;
+font-size: 14pt;
+font-weight: bold;
+margin-top: 100px;
+display: block;
 }

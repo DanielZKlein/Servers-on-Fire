@@ -6,11 +6,11 @@
 <script src="stuff/jquery-1.4.2.min.js" type="text/javascript"></script>
 <script src="stuff/sof.js" type="text/javascript"></script>
 
-<link rel="stylesheet/less" type="text/css" href="stuff/styles.less" />
+<!--<link rel="stylesheet/less" type="text/css" href="stuff/styles.less" />-->
 <!-- <link rel="stylesheet" href="stuff/reset.css" type="text/css" /> -->
 <link rel="stylesheet" href="stuff/sof.css" type="text/css" />
 
-<script src="stuff/less.js" type="text/javascript"></script>
+<!--<script src="stuff/less.js" type="text/javascript"></script>-->
 <script type="text/javascript">
 
 $(function() {
@@ -28,27 +28,21 @@ $(function() {
 <body>
 <div id="wrapper">
 	<div id="header">
-		<div id="riotLogo"><img src="stuff/images/RiotGamesLogo.png" alt="Riot Games Logo" /></div>
-		<div id="maininputdiv"><label for="maininput">Search for: </label>
-			<input id="maininput" type="text" />
+		<div class="guidestep">Step 1: Find the messaging you need</div><br>
+		<div id="maininputdiv"><label for="maininput">Filter: </label>
+			<input id="maininput" type="text" /><img id="maininputinfo" src="stuff/images/infoicon.png" title="Filter is applied as you type">
 		</div>
 		<div id="ajaxstatus">synced</div>
 	</div>
-	<table class="maintable" width="100%">
-		<colgroup>
-			<col width="20%" />
-			<col width="20%" />
-			<col width="20%" />
-			<col width="20%" />
-			<col width="20%" />
-		</colgroup>
-		<tr class="gradGrey">
-			<th>English</th><th>French</th><th>German</th><th>Spanish</th><th>Polish</th>
-		</tr>
-	</table>
+
+
 	<div id="allcats">
 
 	</div>
+</div>
+<div id="stagingarea">
+<div class="guidestep guidestepinactive">Step 2: Prepare messaging for posting</div>
+<span id="tempstaging">Please first select messaging above</span>
 </div>
 </body>
 </html>

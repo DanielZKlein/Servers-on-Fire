@@ -133,6 +133,7 @@ def getMsgsForAjax(query="", filter=""):
 	for category, messages in matches.iteritems():
 		thisRow = {}
 		thisRow["name"] = category
+		dbug("Name is " + category)
 		thisRow["numMatches"] = len(messages)
 		thisRow["messages"] = []
 		for msg in messages:

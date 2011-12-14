@@ -1,4 +1,5 @@
 document.folds = [];
+document.transFolds = [];
 document.langFilter = "";
 document.searchTimeout = false;
 document.keyIsDown = false;
@@ -118,7 +119,7 @@ function newlines(text) {
 }
 
 function addCat() {
-	dbug("adding cat");
+
 	category = prompt("Name the new category");
 	if (!category) {
 		return;
@@ -152,13 +153,21 @@ function takeAnswer(JSONobj) {
 		if (category.numMatches == 1) {
 			resString = "result";
 		}
-		html = "	<table class='softable' id='cat_"+category.name+"'>	<colgroup width='20%'>	<colgroup width='20%'>	<colgroup width='20%'>	<colgroup width='20%'>	<colgroup width='20%'>	<tr><th colspan=5 class='cat_toggle' myname='"+category.name+"' visible='true'>"+category.name+"</th></tr><tr class='numresults'><td colspan=5 align='center'>"+category.numMatches+" results found</td></tr>";
-
+		// dbug("Category name is "  + category.name);
+		html = "<div class='catdeselected cat_toggle' id='" + category.name.replace(/ /g, "-") + "'> <span class='fw'>[+]</span> " + category.name + " (" + category.numMatches + " " + resString + " found)</div>";
+		
 		for (msgid in category.messages) {
 		
 			row = category.messages[msgid];
 					
-			html += "<tr class='result_"+category.name.replace(/ /g, "-") +"'><td id='english_"+row.id+"' class='resultfield'>"+row.english+"</td><td id='french_"+row.id+"' class='resultfield'>"+row.french+"</td><td id='german_"+row.id+"' class='resultfield'>"+row.german+"</td><td id='spanish_"+row.id+"' class='resultfield'>"+row.spanish+"</td><td id='polish_"+row.id+"' class='resultfield'>"+row.polish+"</td></tr>";
+			html += "<div id='en"+row.id+"' class='result result_" + category.name.replace(/ /g, "-") + "'>"+row.english + "<br>[<a href='#' id='"+row.id+"' class='toggletrans'>Show translations</a>]<br>";
+			html += "<table width=100% class='trans transid"+row.id+"'>";
+			html += "<tr class='transrow'><td class='translang'>GERMAN</td><td id='german"+row.id+"' class='resultfield translation'>" + row.german + "</td></tr>"; 
+			html += "<tr class='transrow'><td class='translang'>FRENCH</td><td id='french"+row.id+"' class='resultfield translation'>" + row.french + "</td></tr>"; 
+			html += "<tr class='transrow'><td class='translang'>SPANISH</td><td id='spanish"+row.id+"' class='resultfield translation'>" + row.spanish + "</td></tr>"; 
+			html += "<tr class='transrow'><td class='translang'>POLISH</td><td id='polish"+row.id+"'class='resultfield translation'>" + row.polish + "</td></tr>"; 
+			html += "</table>";
+			html += "</div>";
 		}
 		if (window.editmode) { 
 			html += "<tr><td class='addnewmessage_td' colspan='5'><input type=button value='Add new message in this category' class='addnewmessage styleButton' id='" + category.name + "'>";
@@ -171,21 +180,22 @@ function takeAnswer(JSONobj) {
 		tempFolds = document.folds;
 		//dbug(document.folds);
 		if (!(foldCat in document.folds)) {
-			dbug("adding " + foldCat);
+			// dbug("adding " + foldCat);
 			document.folds[foldCat] = "invisible";
 			tempFolds = popThis(foldCat, tempFolds);
 		} else {
-			dbug("already in: " + foldCat);
+			// dbug("already in: " + foldCat);
 			tempFolds = popThis(foldCat, tempFolds);
 		}
 	}
 	for (id in tempFolds) {
-		dbug("removing " + id);
+		// dbug("removing " + id);
 		popCat = tempFolds[id];
 		document.folds = popThis(popCat, document.folds);
 	}
 	bindStuff();
 	updateFolds();
+	updateTrans();
 	if (document.addedNew) {
 		newRow = JSONobj.newRow;
 		$("#english_" + newRow).click();
@@ -227,8 +237,19 @@ function inputKeyUp() {
 	updateSearch();
 }
 
+function resizeBody() {
+
+	$("body").height(window.innerHeight);
+
+}
+
 function bindStuff() {
 
+	$(window).resize(function () {
+		resizeBody();
+	});
+	resizeBody();
+	$("#maininput").focus();
 	$("#maininput").keydown(function () {
 		if (!document.keyIsDown) {
 			document.keyIsDown = true;
@@ -244,9 +265,15 @@ function bindStuff() {
 	});
 
 	$(".cat_toggle").click(function() {
-		cat = $(this).attr("myname").replace(/ /g, "-");
+		cat = $(this).attr("id");
 		//cat = $(this).text().replace(/ \[.*\]/, "").replace(/ /g, "-");
 		toggleVis(cat);
+	});
+	$(".toggletrans").click(function() {
+		transId = $(this).attr("id");
+		toggleTrans(transId);
+		updateTrans();
+	
 	});
 	if (window.editmode) {
 		//dbug("we are edit");
@@ -275,7 +302,7 @@ function bindStuff() {
 			$(".changecat").change(function () {
 			
 				newCat = $(this).val();
-				dbug("newcat is " + newCat);
+				// dbug("newcat is " + newCat);
 				fieldId = $(this).attr("id").replace("changecat", "");
 				changeCategory(fieldId, newCat);
 				$("#"+fieldId+"_cancelbutton").click();
@@ -284,7 +311,7 @@ function bindStuff() {
 			});
 			$(".cancelbutton").click(function () {
 				my_id = $(this).attr("parentid");
-				dbug("my_id is " + my_id);
+				// dbug("my_id is " + my_id);
 				field = $("#" + my_id);
 				field.empty();
 				field.data("edit", false);
@@ -330,17 +357,58 @@ function bindStuff() {
 	}
 };
 
+//Same functionality as categories; hide/show translations. toggleTrans(id) switches the state, updateTrans sets all translations to their proper state
+function toggleTrans(id) {
+	dbug("Checking " + id + " in " + document.transFolds + ": " + $.inArray(id, document.transFolds));
+	if ($.inArray(id, document.transFolds) > -1) {
+		dbug("Already in. Popping!");
+		document.transFolds = popThis(id, document.transFolds);
+		// one time hide. 
+		$(".transid" + id).css("display", "none");
+		$("#" + id).html("Show translations");
+	} else {
+		dbug("pushing like a pusher");
+		document.transFolds.push(id);
+	}
+}
+
+function updateTrans() {
+// all translations are folded in upon creation. Every search activity is creation; thus, keep only a list of opened translations. Go through these after each search and reopen them, but catch errors and pop translations that trigger errors (were removed by search activity)
+	for (id in document.transFolds) {
+		myid = document.transFolds[id];
+		try {
+			$(".transid" + myid).css("display", "block");
+			$("#"+myid).html("Hide translations");
+		} catch(e) {
+			dbug("caught a naughty id: " + myid)
+			document.transFolds = popThis(document.transFolds[id], document.transFolds);
+		}
+	
+	}
+
+}
+
 function updateFolds() {
 	dbug("toggling visibility " + document.folds + " $$$");
 	for (cat in document.folds) {
 	
 		dbug("setting " + cat + " to " + document.folds[cat]);
 		if (document.folds[cat] == "visible") {
-		
+			oldText = $("#" + cat).html();
+			$("#" + cat).removeClass("catdeselected");
+			$("#" + cat).addClass("catselected");
+			
+			newText = oldText.replace("[+]", "[-]");
+			$("#" + cat).html(newText);
 			$(".result_" + cat).css("display", "");
 		
 		} else {
-		
+			oldText = $("#" + cat).html();
+			newText = oldText.replace("[-]", "[+]");
+			$("#" + cat).addClass("catdeselected");
+			$("#" + cat).removeClass("catselected");
+
+			$("#" + cat).html(newText);
 			$(".result_" + cat).css("display", "none");
 		}
 	
@@ -349,7 +417,7 @@ function updateFolds() {
 
 function toggleVis(cat) {
 	if (!document.folds[cat]) {
-		dbug(cat + ' not found');
+		// dbug(cat + ' not found');
 		return;
 	}
 	if (document.folds[cat] == "visible") {
