@@ -7,6 +7,10 @@ document.addedNew = false;
 editmode = false;
 document.lastSearch = "";
 document.allCategories = [];
+document.translation = []; // array of arrays holding all translations, including English strings. translation[34]['german'] = "das ist gut";
+document.msgSelected = -1;
+document.unstaged = true;
+document.searchWidth = 0;
 
 function popThis(element, array) {
 	returnArr = array.slice(0);
@@ -142,6 +146,7 @@ function addNewMessage() {
 }
 
 function takeAnswer(JSONobj) {
+	document.translation = [];
 	//dbug("taking answer...");
 	$("#allcats").empty();
 	document.lastSearch = JSONobj.query;
@@ -154,24 +159,27 @@ function takeAnswer(JSONobj) {
 			resString = "result";
 		}
 		// dbug("Category name is "  + category.name);
+		// CONSTRUCTING RESULTS
 		html = "<div class='catdeselected cat_toggle' id='" + category.name.replace(/ /g, "-") + "'> <span class='fw'>[+]</span> " + category.name + " (" + category.numMatches + " " + resString + " found)</div>";
 		
-		for (msgid in category.messages) {
+		html += "<table class='category_table result_"+category.name.replace(/ /g, "-") +"'>";
 		
+		for (msgid in category.messages) {
 			row = category.messages[msgid];
-					
-			html += "<div id='en"+row.id+"' class='result result_" + category.name.replace(/ /g, "-") + "'>"+row.english + "<br>[<a href='#' id='"+row.id+"' class='toggletrans'>Show translations</a>]<br>";
-			html += "<table width=100% class='trans transid"+row.id+"'>";
-			html += "<tr class='transrow'><td class='translang'>GERMAN</td><td id='german"+row.id+"' class='resultfield translation'>" + row.german + "</td></tr>"; 
-			html += "<tr class='transrow'><td class='translang'>FRENCH</td><td id='french"+row.id+"' class='resultfield translation'>" + row.french + "</td></tr>"; 
-			html += "<tr class='transrow'><td class='translang'>SPANISH</td><td id='spanish"+row.id+"' class='resultfield translation'>" + row.spanish + "</td></tr>"; 
-			html += "<tr class='transrow'><td class='translang'>POLISH</td><td id='polish"+row.id+"'class='resultfield translation'>" + row.polish + "</td></tr>"; 
-			html += "</table>";
-			html += "</div>";
+			document.translation[row.id] = [];
+			document.translation[row.id]['english'] = row.english;
+			document.translation[row.id]['german'] = row.german;
+			document.translation[row.id]['french'] = row.french;
+			document.translation[row.id]['spanish'] = row.spanish;
+			document.translation[row.id]['polish'] = row.polish;
+			
+			html +="<tr onclick='selectmsg("+row.id+");' id='row"+row.id+"'><td><input type=button onclick='selectmsg("+row.id+");' class='selectrow' value='Select'></td><td>"		
+			html += "<td>"+row.english+"</td></tr>";
 		}
 		if (window.editmode) { 
-			html += "<tr><td class='addnewmessage_td' colspan='5'><input type=button value='Add new message in this category' class='addnewmessage styleButton' id='" + category.name + "'>";
+// foobared
 		}
+		html += "</table>"; // category_table
 		$("#allcats").append(html);
 	}
 	document.allCategories = tempCategories;
@@ -202,8 +210,6 @@ function takeAnswer(JSONobj) {
 		document.addedNew = false;
 	}
 }
-
-
 
 function checkSync() {
 
@@ -240,6 +246,8 @@ function inputKeyUp() {
 function resizeBody() {
 
 	$("body").height(window.innerHeight);
+	searchWidth = $("#maininput").innerWidth();
+	dbug("set to " + searchWidth);
 
 }
 
@@ -249,6 +257,14 @@ function bindStuff() {
 		resizeBody();
 	});
 	resizeBody();
+	$("#wrapper").scroll(function () {
+		keepSearch();
+	});
+	$("#wrapper").click(function () {
+		if (!document.unstaged) {
+			switchSteps();
+		}
+	});
 	$("#maininput").focus();
 	$("#maininput").keydown(function () {
 		if (!document.keyIsDown) {
@@ -426,4 +442,100 @@ function toggleVis(cat) {
 		document.folds[cat] = "visible";
 	}
 	updateFolds();
+}
+
+function switchSteps() {
+	dbug("switching");
+	if (document.unstaged) {
+		dbug("staging");
+		document.unstaged = false;
+		$("#tempstaging").css("display", "none");
+		$("#actualstaging").css("display", "block");
+		$(".step1").addClass("guidestepinactive");
+		$(".step2").removeClass("guidestepinactive");
+		$("#wrapper").addClass("areainactive");
+		$("#stagingarea").removeClass("areainactive");
+		$("#wrapper").css("height", "40%");
+		$("#stagingarea").css("height", "60%");
+	} else {
+		document.unstaged = true;
+		dbug("unstaging");
+		return;
+		$("#tempstaging").css("display", "block");
+		$("#actualstaging").css("display", "none");
+		$(".step1").removeClass("guidestepinactive");
+		$(".step2").addClass("guidestepinactive");
+		$("#wrapper").removeClass("areainactive");
+		$("#stagingarea").addClass("areainactive");
+		$("#wrapper").css("height", "60%");
+		$("#stagingarea").css("height", "40%");
+	}
+}
+
+function selectmsg(msgid) {
+	if (document.unstaged) {
+		switchSteps();
+	}
+	$("#row"+document.msgSelected).removeClass("selected");
+	$("#row"+msgid).addClass("selected");
+	document.msgSelected = msgid;
+	trans = document.translation[msgid];
+	$("#stagingNAEN").html(trans.english);
+	$("#stagingEUWEN").html(trans.english);
+	$("#stagingEUNEEN").html(trans.english);
+	$("#stagingDE").html(trans.german);
+	$("#stagingFR").html(trans.french);
+	$("#stagingES").html(trans.spanish);
+	$("#stagingPL").html(trans.polish);
+	dbug("selecting " + msgid);
+
+}
+
+
+function popStep1(curSec) {
+	ele = $(".step1");
+	newCol = "rgb(255, " + curSec + ", " + curSec + ")";
+	ele.css("background-color", newCol);
+	if (curSec < 255) {
+		curSec = curSec + 2 + Math.floor(curSec/10);
+		setTimeout("popStep1("+curSec+")", 50);
+	}
+}
+var curNormSearch = true;
+function switchSearches() {
+	if (curNormSearch) {
+		$("#maininputdiv").addClass("floatinginput");
+		$("#maininputdiv").removeClass("normalinput");
+		$("#maininputdiv").css("width", searchWidth + "px");
+		$("#maininputdiv").css("margin-left", "-" + (Math.floor(searchWidth / 2) + 32) + "px");
+		// The 32 is a sacrifice to the elder god of browser box models
+		$("#allcats").css("margin-top", "153px");
+		curNormSearch = false;
+	} else {
+		$("#maininputdiv").removeClass("floatinginput");
+		$("#maininputdiv").addClass("normalinput");
+		$("#maininputdiv").css("width", "70%");
+		$("#maininputdiv").css("margin-left", "auto");
+		$("#allcats").css("margin-top", "50px");
+		curNormSearch = true;
+	}
+}	
+
+function keepSearch() {
+	if ($("#wrapper").scrollTop() > 100) {
+		$("#maininputdiv").addClass("floatinginput");
+		$("#maininputdiv").removeClass("normalinput");
+		$("#maininputdiv").css("width", searchWidth + "px");
+		$("#maininputdiv").css("margin-left", "-" + (Math.floor(searchWidth / 2) + 32) + "px");
+		// The 32 is a sacrifice to the elder god of browser box models
+		$("#allcats").css("margin-top", "153px");
+		curNormSearch = false;
+	} else {
+		$("#maininputdiv").removeClass("floatinginput");
+		$("#maininputdiv").addClass("normalinput");
+		$("#maininputdiv").css("width", "70%");
+		$("#maininputdiv").css("margin-left", "auto");
+		$("#allcats").css("margin-top", "50px");
+			curNormSearch = true;
+	}
 }

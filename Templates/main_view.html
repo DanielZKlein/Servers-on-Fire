@@ -20,19 +20,23 @@ $(function() {
 	document.lastSearch = $("#maininput").val();
 	checkSync();
 	updateSearch();
+	popStep1(0);
 
 });
 </script>
 </head>
 
 <body>
+
+<div id="ajaxstatus">synced</div>
 <div id="wrapper">
 	<div id="header">
-		<div class="guidestep">Step 1: Find the messaging you need</div><br>
-		<div id="maininputdiv"><label for="maininput">Filter: </label>
-			<input id="maininput" type="text" /><img id="maininputinfo" src="stuff/images/infoicon.png" title="Filter is applied as you type">
+		<div class="guidestep step1">Step 1: Find the messaging you need</div><br>
+		<div id="maininputdiv" class="normalinput">
+			<input id="maininput" type="text" />
+			<input id="dummybutton" type="button" value="Search" onclick="switchSearches();" title="This button does nothing! Filter is applied as you type.">
 		</div>
-		<div id="ajaxstatus">synced</div>
+		
 	</div>
 
 
@@ -40,9 +44,20 @@ $(function() {
 
 	</div>
 </div>
-<div id="stagingarea">
-<div class="guidestep guidestepinactive">Step 2: Prepare messaging for posting</div>
+<div id="stagingarea" class="areainactive">
+<div class="guidestep guidestepinactive step2">Step 2: Prepare messaging for posting</div>
 <span id="tempstaging">Please first select messaging above</span>
+<div id="actualstaging">
+<table id="stagingtable"><tr><td>Language</td><td>Text</td><td>Forum link</td></tr>
+<tr><td>English (NA)</td><td id='stagingNAEN'></td></tr>
+<tr><td>English (EUW)</td><td id='stagingEUWEN'></td></tr>
+<tr><td>English (EUNE)</td><td id='stagingEUNEEN'></td></tr>
+<tr><td>German</td><td id='stagingDE'></td></tr>
+<tr><td>French</td><td id='stagingFR'></td></tr>
+<tr><td>Spanish</td><td id='stagingES'></td></tr>
+<tr><td>Polish</td><td id='stagingPL'></td></tr>
+</table>
+</div>
 </div>
 </body>
 </html>

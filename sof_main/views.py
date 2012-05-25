@@ -110,7 +110,7 @@ def ajax(request):
 	filter = request.GET.get("filter", "")
 	returnObject = getMsgsForAjax(query = query, filter = filter)
 	jr = json.dumps(returnObject)
-	#dbug(jr)
+	dbug(jr)
 	return HttpResponse(jr)
 	
 def getMsgsForAjax(query="", filter=""):
