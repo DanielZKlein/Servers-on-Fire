@@ -16,22 +16,18 @@ overflow: hidden;
 display: none;
 }
 
-.normalinput, #allcats {
+#allcats {
 margin-top: 50px;
 width: 70%;
 margin-left: auto;
 margin-right: auto;
 }
 
-.floatinginput {
+#maininputdiv {
+
 position: absolute;
 top: 0px;
-left: 50%;
-margin-left: -367px;
-padding: 68px 20px 10px 20px;
-background-color: white;
-border: 1px solid grey;
-border-top: none;
+left: 550px;
 }
 
 #maininputdiv , #maininput{
@@ -183,6 +179,23 @@ background-color: #DADADA;
  padding-bottom: 15px;
 }
  
+#stagingtable {
+width: 100%;
+}
+
+#stagingtable td {
+padding: 10px;
+}
+
+#stagingtable tr:nth-child(even){
+background-color: #EEE;
+}
+
+#stagingtable tr:nth-child(odd), #stagingtable tr:nth-child(odd) a {
+background-color: #222;
+color: white;
+} 
+
  .category_table tr:last-child{
   border-bottom: none;
   }
@@ -190,3 +203,7 @@ background-color: #DADADA;
  #actualstaging {
  display: none;
  }
+ 
+
+ 
+ 

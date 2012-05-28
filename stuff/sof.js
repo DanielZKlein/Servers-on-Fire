@@ -9,7 +9,7 @@ document.lastSearch = "";
 document.allCategories = [];
 document.translation = []; // array of arrays holding all translations, including English strings. translation[34]['german'] = "das ist gut";
 document.msgSelected = -1;
-document.unstaged = true;
+document.activeStep = 1; // 1 or 2
 document.searchWidth = 0;
 
 function popThis(element, array) {
@@ -173,7 +173,7 @@ function takeAnswer(JSONobj) {
 			document.translation[row.id]['spanish'] = row.spanish;
 			document.translation[row.id]['polish'] = row.polish;
 			
-			html +="<tr onclick='selectmsg("+row.id+");' id='row"+row.id+"'><td><input type=button onclick='selectmsg("+row.id+");' class='selectrow' value='Select'></td><td>"		
+			html +="<tr class='msgrow' id='row"+row.id+"'><td><input type=button class='selectrow' value='Select'></td><td>"		
 			html += "<td>"+row.english+"</td></tr>";
 		}
 		if (window.editmode) { 
@@ -246,8 +246,6 @@ function inputKeyUp() {
 function resizeBody() {
 
 	$("body").height(window.innerHeight);
-	searchWidth = $("#maininput").innerWidth();
-	dbug("set to " + searchWidth);
 
 }
 
@@ -257,13 +255,20 @@ function bindStuff() {
 		resizeBody();
 	});
 	resizeBody();
-	$("#wrapper").scroll(function () {
-		keepSearch();
-	});
-	$("#wrapper").click(function () {
-		if (!document.unstaged) {
+	$("#wrapper").click(function (e) {
+		dbug("rapper clicked");
+		if (document.activeStep === 2) {
+			dbug("about to switch from rapper");
 			switchSteps();
+			e.stopPropagation();
+			// does not work for some reason
 		}
+	});
+	$(".msgrow").click(function (e) {
+		rowid = $(this).attr("id").replace(/row/, "");
+		selectmsg(rowid);
+		e.stopPropagation();
+		
 	});
 	$("#maininput").focus();
 	$("#maininput").keydown(function () {
@@ -446,35 +451,39 @@ function toggleVis(cat) {
 
 function switchSteps() {
 	dbug("switching");
-	if (document.unstaged) {
+	if (document.activeStep === 1) {
 		dbug("staging");
-		document.unstaged = false;
+		document.activeStep = 2;
 		$("#tempstaging").css("display", "none");
 		$("#actualstaging").css("display", "block");
 		$(".step1").addClass("guidestepinactive");
 		$(".step2").removeClass("guidestepinactive");
 		$("#wrapper").addClass("areainactive");
 		$("#stagingarea").removeClass("areainactive");
-		$("#wrapper").css("height", "40%");
-		$("#stagingarea").css("height", "60%");
+		$("#wrapper").animate({'height': '40%'}, 500);
+		$("#stagingarea").animate({'height': '60%'}, 500);
+		
+		popStep(0, 2);
 	} else {
-		document.unstaged = true;
+		document.activeStep = 1;
 		dbug("unstaging");
-		return;
 		$("#tempstaging").css("display", "block");
 		$("#actualstaging").css("display", "none");
 		$(".step1").removeClass("guidestepinactive");
 		$(".step2").addClass("guidestepinactive");
 		$("#wrapper").removeClass("areainactive");
 		$("#stagingarea").addClass("areainactive");
-		$("#wrapper").css("height", "60%");
-		$("#stagingarea").css("height", "40%");
+		$("#wrapper").animate({"height": "60%"}, 500);
+		$("#stagingarea").css({"height": "40%"}, 500);
+		popStep(0, 1);
 	}
 }
 
 function selectmsg(msgid) {
-	if (document.unstaged) {
+	if (document.activeStep === 1) {
 		switchSteps();
+	} else {
+		dbug(document.activeStep);
 	}
 	$("#row"+document.msgSelected).removeClass("selected");
 	$("#row"+msgid).addClass("selected");
@@ -492,50 +501,12 @@ function selectmsg(msgid) {
 }
 
 
-function popStep1(curSec) {
-	ele = $(".step1");
+function popStep(curSec, step) {
+	ele = $(".step" + step);
 	newCol = "rgb(255, " + curSec + ", " + curSec + ")";
 	ele.css("background-color", newCol);
 	if (curSec < 255) {
 		curSec = curSec + 2 + Math.floor(curSec/10);
-		setTimeout("popStep1("+curSec+")", 50);
-	}
-}
-var curNormSearch = true;
-function switchSearches() {
-	if (curNormSearch) {
-		$("#maininputdiv").addClass("floatinginput");
-		$("#maininputdiv").removeClass("normalinput");
-		$("#maininputdiv").css("width", searchWidth + "px");
-		$("#maininputdiv").css("margin-left", "-" + (Math.floor(searchWidth / 2) + 32) + "px");
-		// The 32 is a sacrifice to the elder god of browser box models
-		$("#allcats").css("margin-top", "153px");
-		curNormSearch = false;
-	} else {
-		$("#maininputdiv").removeClass("floatinginput");
-		$("#maininputdiv").addClass("normalinput");
-		$("#maininputdiv").css("width", "70%");
-		$("#maininputdiv").css("margin-left", "auto");
-		$("#allcats").css("margin-top", "50px");
-		curNormSearch = true;
-	}
-}	
-
-function keepSearch() {
-	if ($("#wrapper").scrollTop() > 100) {
-		$("#maininputdiv").addClass("floatinginput");
-		$("#maininputdiv").removeClass("normalinput");
-		$("#maininputdiv").css("width", searchWidth + "px");
-		$("#maininputdiv").css("margin-left", "-" + (Math.floor(searchWidth / 2) + 32) + "px");
-		// The 32 is a sacrifice to the elder god of browser box models
-		$("#allcats").css("margin-top", "153px");
-		curNormSearch = false;
-	} else {
-		$("#maininputdiv").removeClass("floatinginput");
-		$("#maininputdiv").addClass("normalinput");
-		$("#maininputdiv").css("width", "70%");
-		$("#maininputdiv").css("margin-left", "auto");
-		$("#allcats").css("margin-top", "50px");
-			curNormSearch = true;
+		setTimeout("popStep("+curSec+", "+step+")", 50);
 	}
 }

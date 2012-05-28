@@ -20,22 +20,22 @@ $(function() {
 	document.lastSearch = $("#maininput").val();
 	checkSync();
 	updateSearch();
-	popStep1(0);
+	popStep(0, 1);
 
 });
 </script>
 </head>
 
 <body>
+		<div id="maininputdiv" class="normalinput">
+			<input id="maininput" type="text" />
+			<input id="dummybutton" type="button" value="Search" onclick="switchSearches();" title="This button does nothing! Filter is applied as you type.">
+		</div>
 
 <div id="ajaxstatus">synced</div>
 <div id="wrapper">
 	<div id="header">
 		<div class="guidestep step1">Step 1: Find the messaging you need</div><br>
-		<div id="maininputdiv" class="normalinput">
-			<input id="maininput" type="text" />
-			<input id="dummybutton" type="button" value="Search" onclick="switchSearches();" title="This button does nothing! Filter is applied as you type.">
-		</div>
 		
 	</div>
 
@@ -48,14 +48,20 @@ $(function() {
 <div class="guidestep guidestepinactive step2">Step 2: Prepare messaging for posting</div>
 <span id="tempstaging">Please first select messaging above</span>
 <div id="actualstaging">
-<table id="stagingtable"><tr><td>Language</td><td>Text</td><td>Forum link</td></tr>
-<tr><td>English (NA)</td><td id='stagingNAEN'></td></tr>
-<tr><td>English (EUW)</td><td id='stagingEUWEN'></td></tr>
-<tr><td>English (EUNE)</td><td id='stagingEUNEEN'></td></tr>
-<tr><td>German</td><td id='stagingDE'></td></tr>
-<tr><td>French</td><td id='stagingFR'></td></tr>
-<tr><td>Spanish</td><td id='stagingES'></td></tr>
-<tr><td>Polish</td><td id='stagingPL'></td></tr>
+<table id="stagingtable">
+<colgroup>
+<col width=10%>
+<col width=70%>
+<col width=20%>
+</colgroup>
+<tr><td>Language</td><td>Text</td><td>Forum link</td></tr>
+<tr><td>English (NA)</td><td id='stagingNAEN'></td><td><a href="http://na.leagueoflegends.com/board/forumdisplay.php?f=20">NA Service Status</a></td></tr>
+<tr><td>English (EUW)</td><td id='stagingEUWEN'></td><td><a href="http://euw.leagueoflegends.com/board/forumdisplay.php?f=10">EUW English Service Status</a></td></tr>
+<tr><td>English (EUNE)</td><td id='stagingEUNEEN'></td><td><a href="http://eune.leagueoflegends.com/board/forumdisplay.php?f=10">EUNE English Service Status</a></td></tr>
+<tr><td>German</td><td id='stagingDE'></td><td><a href="http://euw.leagueoflegends.com/board/forumdisplay.php?f=46">German Service Status</a></td></tr>
+<tr><td>French</td><td id='stagingFR'></td><td><a href="http://euw.leagueoflegends.com/board/forumdisplay.php?f=35">French Service Status</a></td></tr>
+<tr><td>Spanish</td><td id='stagingES'></td><td><a href="http://euw.leagueoflegends.com/board/forumdisplay.php?f=21">Spanish Service Status</a></td></tr>
+<tr><td>Polish</td><td id='stagingPL'></td><td><a href="http://eune.leagueoflegends.com/board/forumdisplay.php?f=83">Polish Service Status</a></td></tr>
 </table>
 </div>
 </div>
