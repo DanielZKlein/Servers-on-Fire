@@ -91,15 +91,12 @@ function dbug(stuff) {
 function jsonWrap(url, dict, cb) {
 
 	$("#ajaxstatus").text("Sending...");
-	//dbug("sending...");
 	$.getJSON(url, dict, function(data) {
-		//dbug("return received");
 		$("#ajaxstatus").text("Thinking...");
 		cb(data);
 		$("#ajaxstatus").text("synced");
 	});
 	$("#ajaxstatus").text("Waiting for sync...");
-	//dbug("end of wrap");
 
 }
 
@@ -147,7 +144,6 @@ function addNewMessage() {
 
 function takeAnswer(JSONobj) {
 	document.translation = [];
-	//dbug("taking answer...");
 	$("#allcats").empty();
 	document.lastSearch = JSONobj.query;
 	tempCategories = [];
@@ -158,7 +154,6 @@ function takeAnswer(JSONobj) {
 		if (category.numMatches == 1) {
 			resString = "result";
 		}
-		// dbug("Category name is "  + category.name);
 		// CONSTRUCTING RESULTS
 		html = "<div class='catdeselected cat_toggle' id='" + category.name.replace(/ /g, "-") + "'> <span class='fw'>[+]</span> " + category.name + " (" + category.numMatches + " " + resString + " found)</div>";
 		
@@ -172,6 +167,7 @@ function takeAnswer(JSONobj) {
 			document.translation[row.id]['french'] = row.french;
 			document.translation[row.id]['spanish'] = row.spanish;
 			document.translation[row.id]['polish'] = row.polish;
+			document.translation[row.id]['korean'] = row.korean;
 			
 			html +="<tr class='msgrow' id='row"+row.id+"'><td><input type=button class='selectrow' value='Select'></td><td>"		
 			html += "<td>"+row.english+"</td></tr>";
@@ -186,24 +182,19 @@ function takeAnswer(JSONobj) {
 	for (id in tempCategories) {
 		foldCat = tempCategories[id].replace(/ /g, "-");
 		tempFolds = document.folds;
-		//dbug(document.folds);
 		if (!(foldCat in document.folds)) {
-			// dbug("adding " + foldCat);
 			document.folds[foldCat] = "invisible";
 			tempFolds = popThis(foldCat, tempFolds);
 		} else {
-			// dbug("already in: " + foldCat);
 			tempFolds = popThis(foldCat, tempFolds);
 		}
 	}
 	for (id in tempFolds) {
-		// dbug("removing " + id);
 		popCat = tempFolds[id];
 		document.folds = popThis(popCat, document.folds);
 	}
 	bindStuff();
 	updateFolds();
-	updateTrans();
 	if (document.addedNew) {
 		newRow = JSONobj.newRow;
 		$("#english_" + newRow).click();
@@ -212,12 +203,9 @@ function takeAnswer(JSONobj) {
 }
 
 function checkSync() {
-
 	if (!document.keyIsDown) {
-			
 		if (document.lastSearch != $("#maininput").val()) {
 			updateSearch();
-			dbug("FORCED SYNC!");
 		} 
 	}
 	setTimeout("checkSync()", 1000);
@@ -256,9 +244,7 @@ function bindStuff() {
 	});
 	resizeBody();
 	$("#wrapper").click(function (e) {
-		dbug("rapper clicked");
 		if (document.activeStep === 2) {
-			dbug("about to switch from rapper");
 			switchSteps();
 			e.stopPropagation();
 			// does not work for some reason
@@ -290,14 +276,7 @@ function bindStuff() {
 		//cat = $(this).text().replace(/ \[.*\]/, "").replace(/ /g, "-");
 		toggleVis(cat);
 	});
-	$(".toggletrans").click(function() {
-		transId = $(this).attr("id");
-		toggleTrans(transId);
-		updateTrans();
-	
-	});
 	if (window.editmode) {
-		//dbug("we are edit");
 		$(".addnewmessage").click(addNewMessage);
 		$(".filterbutton").click(function() {
 			document.filter = $(this).val();
@@ -310,7 +289,6 @@ function bindStuff() {
 			} 
 			$(this).data("edit", true);
 			my_id = $(this).attr("id");
-			//dbug("constructing edit view for " + my_id);
 			orig_text = $(this).text();
 			$(this).data('original_text', $(this).html());
 			$(this).empty();
@@ -323,7 +301,6 @@ function bindStuff() {
 			$(".changecat").change(function () {
 			
 				newCat = $(this).val();
-				// dbug("newcat is " + newCat);
 				fieldId = $(this).attr("id").replace("changecat", "");
 				changeCategory(fieldId, newCat);
 				$("#"+fieldId+"_cancelbutton").click();
@@ -332,7 +309,6 @@ function bindStuff() {
 			});
 			$(".cancelbutton").click(function () {
 				my_id = $(this).attr("parentid");
-				// dbug("my_id is " + my_id);
 				field = $("#" + my_id);
 				field.empty();
 				field.data("edit", false);
@@ -341,7 +317,6 @@ function bindStuff() {
 				return false;
 			});
 			$(".savebutton").click(function () {
-				//dbug("Save invoked");
 				my_id = $(this).attr("parentid");
 				ebox = $("#" + my_id + "_editbox");
 				new_text = ebox.val();
@@ -378,42 +353,9 @@ function bindStuff() {
 	}
 };
 
-//Same functionality as categories; hide/show translations. toggleTrans(id) switches the state, updateTrans sets all translations to their proper state
-function toggleTrans(id) {
-	dbug("Checking " + id + " in " + document.transFolds + ": " + $.inArray(id, document.transFolds));
-	if ($.inArray(id, document.transFolds) > -1) {
-		dbug("Already in. Popping!");
-		document.transFolds = popThis(id, document.transFolds);
-		// one time hide. 
-		$(".transid" + id).css("display", "none");
-		$("#" + id).html("Show translations");
-	} else {
-		dbug("pushing like a pusher");
-		document.transFolds.push(id);
-	}
-}
-
-function updateTrans() {
-// all translations are folded in upon creation. Every search activity is creation; thus, keep only a list of opened translations. Go through these after each search and reopen them, but catch errors and pop translations that trigger errors (were removed by search activity)
-	for (id in document.transFolds) {
-		myid = document.transFolds[id];
-		try {
-			$(".transid" + myid).css("display", "block");
-			$("#"+myid).html("Hide translations");
-		} catch(e) {
-			dbug("caught a naughty id: " + myid)
-			document.transFolds = popThis(document.transFolds[id], document.transFolds);
-		}
-	
-	}
-
-}
-
 function updateFolds() {
-	dbug("toggling visibility " + document.folds + " $$$");
 	for (cat in document.folds) {
 	
-		dbug("setting " + cat + " to " + document.folds[cat]);
 		if (document.folds[cat] == "visible") {
 			oldText = $("#" + cat).html();
 			$("#" + cat).removeClass("catdeselected");
@@ -438,7 +380,6 @@ function updateFolds() {
 
 function toggleVis(cat) {
 	if (!document.folds[cat]) {
-		// dbug(cat + ' not found');
 		return;
 	}
 	if (document.folds[cat] == "visible") {
@@ -450,9 +391,7 @@ function toggleVis(cat) {
 }
 
 function switchSteps() {
-	dbug("switching");
 	if (document.activeStep === 1) {
-		dbug("staging");
 		document.activeStep = 2;
 		$("#tempstaging").css("display", "none");
 		$("#actualstaging").css("display", "block");
@@ -466,7 +405,6 @@ function switchSteps() {
 		popStep(0, 2);
 	} else {
 		document.activeStep = 1;
-		dbug("unstaging");
 		$("#tempstaging").css("display", "block");
 		$("#actualstaging").css("display", "none");
 		$(".step1").removeClass("guidestepinactive");
@@ -482,9 +420,7 @@ function switchSteps() {
 function selectmsg(msgid) {
 	if (document.activeStep === 1) {
 		switchSteps();
-	} else {
-		dbug(document.activeStep);
-	}
+	} 
 	$("#row"+document.msgSelected).removeClass("selected");
 	$("#row"+msgid).addClass("selected");
 	document.msgSelected = msgid;
@@ -496,7 +432,7 @@ function selectmsg(msgid) {
 	$("#stagingFR").html(trans.french);
 	$("#stagingES").html(trans.spanish);
 	$("#stagingPL").html(trans.polish);
-	dbug("selecting " + msgid);
+	$("#stagingKR").html(trans.korean);
 
 }
 

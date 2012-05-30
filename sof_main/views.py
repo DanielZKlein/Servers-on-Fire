@@ -15,7 +15,7 @@ def dbug(text):
 	try:
 		pp = pprint.PrettyPrinter()
 		fh = open("debuglog.txt", "a")
-		now = datetime.now().strftime("%H:%M:%S")
+		now = datetime.now().strftime("%H:%M:%S.%f")
 		if isinstance(text, str) or isinstance(text, unicode):
 			fh.write(now + " " + text + "\n")
 		else:
@@ -56,7 +56,7 @@ def home(request):
 		return render_to_response("templates/main_view.html", sd)
 	
 def getMsgsWithCats(objs = Message.objects.all(), filter = "all", query = ""):
-	# Miaow
+	# Meaow
 	cursor = connection.cursor()
 	cursor.execute("SELECT DISTINCT category FROM sof_main_message")
 	cats = cursor.fetchall()
@@ -106,14 +106,18 @@ def ajax(request):
 	if not request.is_ajax():
 		dbug("DENIED")
 		return False
+	dbug("AJAX received: ")
+	dbug(request.GET)
 	query = request.GET.get("query", "")
 	filter = request.GET.get("filter", "")
 	returnObject = getMsgsForAjax(query = query, filter = filter)
+	dbug("about to dump string")
 	jr = json.dumps(returnObject)
-	dbug(jr)
+	dbug("dumped")
 	return HttpResponse(jr)
 	
 def getMsgsForAjax(query="", filter=""):
+	dbug("getmsgs for a jax initiated")
 	returnObject = {"reply" : []}
 	query = query.encode("ascii", "ignore")
 	terms = shlex.split(query)
@@ -133,7 +137,6 @@ def getMsgsForAjax(query="", filter=""):
 	for category, messages in matches.iteritems():
 		thisRow = {}
 		thisRow["name"] = category
-		dbug("Name is " + category)
 		thisRow["numMatches"] = len(messages)
 		thisRow["messages"] = []
 		for msg in messages:
@@ -143,11 +146,13 @@ def getMsgsForAjax(query="", filter=""):
 			newRow["spanish"] = linebreaks(msg.spanish)
 			newRow["german"] = linebreaks(msg.german)
 			newRow["polish"] = linebreaks(msg.polish)
+			newRow["korean"] = linebreaks(msg.korean)
 			newRow["id"] = msg.id
 			thisRow["messages"].append(newRow)
 		returnObject["reply"].append(thisRow)
 
 	returnObject["query"] = query
+	dbug("returning from getmessages")
 	return returnObject
 
 	

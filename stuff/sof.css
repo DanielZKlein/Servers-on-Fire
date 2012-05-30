@@ -1,6 +1,6 @@
 #ajaxstatus {
 position: fixed;
-top: 0px; 
+bottom: 0px; 
 right: 40px;
 }
 
@@ -134,6 +134,8 @@ width: 100%;
 border-top: 3px solid #590202;
 text-align: center;
 vertical-align: middle;
+overflow-y: scroll;
+
 }
 
 .guidestepinactive {
@@ -185,6 +187,7 @@ width: 100%;
 
 #stagingtable td {
 padding: 10px;
+text-align: left;
 }
 
 #stagingtable tr:nth-child(even){
