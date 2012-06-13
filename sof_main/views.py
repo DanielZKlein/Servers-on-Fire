@@ -146,6 +146,7 @@ def getMsgsForAjax(query="", filter=""):
 			newRow["spanish"] = linebreaks(msg.spanish)
 			newRow["german"] = linebreaks(msg.german)
 			newRow["polish"] = linebreaks(msg.polish)
+			newRow["romanian"] = linebreaks(msg.romanian)
 			newRow["korean"] = linebreaks(msg.korean)
 			newRow["id"] = msg.id
 			thisRow["messages"].append(newRow)

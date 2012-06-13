@@ -168,6 +168,7 @@ function takeAnswer(JSONobj) {
 			document.translation[row.id]['spanish'] = row.spanish;
 			document.translation[row.id]['polish'] = row.polish;
 			document.translation[row.id]['korean'] = row.korean;
+			document.translation[row.id]['romanian'] = row.romanian;
 			
 			html +="<tr class='msgrow' id='row"+row.id+"'><td><input type=button class='selectrow' value='Select'></td><td>"		
 			html += "<td>"+row.english+"</td></tr>";
@@ -244,6 +245,7 @@ function bindStuff() {
 	});
 	resizeBody();
 	$("#wrapper").click(function (e) {
+		dbug("wrapper clicked");
 		if (document.activeStep === 2) {
 			switchSteps();
 			e.stopPropagation();
@@ -432,6 +434,7 @@ function selectmsg(msgid) {
 	$("#stagingFR").html(trans.french);
 	$("#stagingES").html(trans.spanish);
 	$("#stagingPL").html(trans.polish);
+	$("#stagingRO").html(trans.romanian);
 	$("#stagingKR").html(trans.korean);
 
 }
