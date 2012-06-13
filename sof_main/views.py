@@ -124,14 +124,6 @@ def getMsgsForAjax(query="", filter=""):
 	matches = Message.objects.all()
 	for term in terms:
 		matches = matches.filter(english__icontains = term)
-	if filter == "french":
-		matches = matches.filter(french__exact = "")
-	elif filter == "german":
-		matches = matches.filter(german__exact = "")
-	elif filter == "spanish":
-		matches = matches.filter(spanish__exact = "")
-	elif filter == "polish":
-		matches = matches.filter(polish__exact = "")
 	matches = getMsgsWithCats(objs = matches)
 
 	for category, messages in matches.iteritems():
@@ -148,6 +140,7 @@ def getMsgsForAjax(query="", filter=""):
 			newRow["polish"] = linebreaks(msg.polish)
 			newRow["romanian"] = linebreaks(msg.romanian)
 			newRow["korean"] = linebreaks(msg.korean)
+			newRow["greek"] = linebreaks(msg.greek)
 			newRow["id"] = msg.id
 			thisRow["messages"].append(newRow)
 		returnObject["reply"].append(thisRow)

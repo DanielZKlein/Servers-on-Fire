@@ -168,6 +168,7 @@ function takeAnswer(JSONobj) {
 			document.translation[row.id]['spanish'] = row.spanish;
 			document.translation[row.id]['polish'] = row.polish;
 			document.translation[row.id]['korean'] = row.korean;
+			document.translation[row.id]['greek'] = row.greek;
 			document.translation[row.id]['romanian'] = row.romanian;
 			
 			html +="<tr class='msgrow' id='row"+row.id+"'><td><input type=button class='selectrow' value='Select'></td><td>"		
@@ -435,6 +436,7 @@ function selectmsg(msgid) {
 	$("#stagingES").html(trans.spanish);
 	$("#stagingPL").html(trans.polish);
 	$("#stagingRO").html(trans.romanian);
+	$("#stagingGR").html(trans.greek);
 	$("#stagingKR").html(trans.korean);
 
 }
