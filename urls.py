@@ -7,6 +7,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', 'serversonfire.sof_main.views.home'),
 	url(r'^ajax/$', 'serversonfire.sof_main.views.ajax'),
+	url(r'^gettime/$', 'serversonfire.sof_main.views.gettime'),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
 	url(r'^takeedit/$', 'serversonfire.sof_main.views.takeedit'),

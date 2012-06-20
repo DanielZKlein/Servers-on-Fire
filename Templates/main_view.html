@@ -1,74 +1,147 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-<head>
-<title>Servers on Fire</title>
-<script src="stuff/jquery-1.4.2.min.js" type="text/javascript"></script>
-<script src="stuff/sof.js" type="text/javascript"></script>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Servers on fire</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!--<link rel="stylesheet/less" type="text/css" href="stuff/styles.less" />-->
-<!-- <link rel="stylesheet" href="stuff/reset.css" type="text/css" /> -->
-<link rel="stylesheet" href="stuff/sof.css" type="text/css" />
+    <!-- Le styles -->
+    <link href="stuff/bootstrap.css" rel="stylesheet">
+    <link href="stuff/bootstrap-responsive.css" rel="stylesheet">
+    <link href="stuff/sof.css" rel="stylesheet">
 
-<!--<script src="stuff/less.js" type="text/javascript"></script>-->
-<script type="text/javascript">
+    <!-- Le fav and touch icons -->
+  </head>
 
-$(function() {
-
-	window.editmode = false;
-	bindStuff();
-	document.lastSearch = $("#maininput").val();
-	checkSync();
-	updateSearch();
-	popStep(0, 1);
-
-});
-</script>
-</head>
-
-<body>
-		<div id="maininputdiv" class="normalinput">
-			<input id="maininput" type="text" />
-			<input id="dummybutton" type="button" value="Search" title="This button does nothing! Filter is applied as you type.">
-		</div>
-
+  <body>
 <div id="ajaxstatus">synced</div>
-<div id="wrapper">
-	<div id="header">
-		<div class="guidestep step1">Step 1: Find the messaging you need</div><br>
-		
+
+  <div class="navbar navbar-fixed-top">
+	<div class="navbar-inner">
+		<div class="container">
+			<a class="brand pull-left" style="position: relative; left: -250px;" href="#">Servers on Fire</a>
+			<form class="navbar-search" action="">
+				<input id="maininput" type="text" class="search-query span4" placeholder="Search">
+            </form>
+		</div>
 	</div>
+</div>
 
 
-	<div id="allcats">
+    <div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span3">
+				<form class="form-vertical">
+					<fieldset>
+						<legend>Assemble the message</legend>
+							<div style="margin-bottom: 0px;" class="control-group">
+								<label class="control-label" for="pD-title">Thread title</label>
+								<div class="controls">
+									<span class="input-xlarge uneditable-input pDinput" id="pD-title"></span>
+								</div>
+							</div>
+							<div class="control-group">
+								<div class="control">
+									<label class="checkbox inline"><input type="checkbox" id="pD-tstamptitle">Time-stamp</label>
+									<input type="button" class="button pull-right" id="useAsTitle" value="Use selected message">
+									
+								</div>
+							</div>
+							<hr>
+							<div class="control-group">
+								<label class="control-label" for="pD-body">Thread body</label>
+								<div class="controls">
+									<span class="input-xlarge uneditable-input pDinput" id="pD-body" ></span>
+								</div>
+							</div>
+							<div class="control-group">
+								<div class="control">
+									<label class="checkbox inline"><input type="checkbox" id="pD-tstampbody">Time-stamp</label>
+									<input type="button" class="button pull-right deactivated" id="useAsBody" value="Use selected message">
+									
+								</div>
+							</div>
+							
+					</fieldset>
+					<fieldset>
+						<legend>Fun with times! Fun times!</legend>
+							<div class="control-group">
+								<label class="control-label" for="pD-localtime">Time in Los Angeles:</label>
+								<div class="controls">
+									<span type="text" id="pD-timena" class="input-xlarge uneditable-input"></span>
+								</div>
+							</div>
+					
+					</fieldset>
+				</form>
 
-	</div>
-</div>
-<div id="stagingarea" class="areainactive">
-<div class="guidestep guidestepinactive step2">Step 2: Prepare messaging for posting</div>
-<span id="tempstaging">Please first select messaging above</span>
-<div id="actualstaging">
-<div id="timezones">
-</div>
-<table id="stagingtable">
-<colgroup>
-<col width=10%>
-<col width=70%>
-<col width=20%>
-</colgroup>
-<tr><td>Language</td><td>Text</td><td>Forum link</td></tr>
-<tr><td>English (NA)</td><td id='stagingNAEN'></td><td><a href="http://na.leagueoflegends.com/board/forumdisplay.php?f=20">NA Service Status</a></td></tr>
-<tr><td>English (EUW)</td><td id='stagingEUWEN'></td><td><a href="http://euw.leagueoflegends.com/board/forumdisplay.php?f=10">EUW English Service Status</a></td></tr>
-<tr><td>English (EUNE)</td><td id='stagingEUNEEN'></td><td><a href="http://eune.leagueoflegends.com/board/forumdisplay.php?f=10">EUNE English Service Status</a></td></tr>
-<tr><td>German</td><td id='stagingDE'></td><td><a href="http://euw.leagueoflegends.com/board/forumdisplay.php?f=46">German Service Status</a></td></tr>
-<tr><td>French</td><td id='stagingFR'></td><td><a href="http://euw.leagueoflegends.com/board/forumdisplay.php?f=35">French Service Status</a></td></tr>
-<tr><td>Spanish</td><td id='stagingES'></td><td><a href="http://euw.leagueoflegends.com/board/forumdisplay.php?f=21">Spanish Service Status</a></td></tr>
-<tr><td>Polish</td><td id='stagingPL'></td><td><a href="http://eune.leagueoflegends.com/board/forumdisplay.php?f=83">Polish Service Status</a></td></tr>
-<tr><td>Romanian</td><td id='stagingRO'></td><td><a href="http://eune.leagueoflegends.com/board/forumdisplay.php?f=143">Romanian Service Status</a></td></tr>
-<tr><td>Greek</td><td id='stagingGR'></td><td><a href="http://eune.leagueoflegends.com/board/forumdisplay.php?f=143">Greek forum link TK</a></td></tr>
-<TR><TD>Korean</td><td id='stagingKR'></td><td>KR SS TK</td></tr>
-</table>
-</div>
-</div>
-</body>
+
+			</div>
+			<div class="span9">
+				<div id="step1"> <!-- not part of the bootstrap scaffolding, but a wrap-around div that restricts the size of the scaffolding inside -->
+					<div id="messages">
+					</div>
+				</div>
+				<div id="step2"> 
+					<div class="row-fluid areainactive" id="tempstaging">
+						<div class="span12">Please first select messaging above.</div>
+					</div>
+					<div id="actualstaging">
+						<table width=100% class="table-bordered table-striped table-condensed">
+							<colgroup>
+								<col width="11%" /><!-- language -->
+								<col width="60%" /><!-- messaging -->
+								<col width="21%" /><!-- localized time -->
+								<col width="8%" /><!-- post link -->
+								
+							</colgroup>
+							<tr><thead><th>Language/Region</th><th>Localized message</th><th>Localized time</th><th>Forum link</th></tr></thead>
+							{% for shortcut, data in locaData.items %}
+							<tr>
+								<td class="s2lang">{{data.region|capfirst}}</td>
+								<td id="staging{{shortcut}}"></td>
+								<td id="datetime{{shortcut}}"></td>
+								<td class="postlink"><a href="{{data.forumurl}}">Forums</a></td>
+							</tr>
+							{% endfor %}
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> <!-- /container -->
+	
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	<script src="stuff/sof.js" type="text/javascript"></script>
+
+    <script src="stuff/jquery.js"></script>
+    <script src="stuff/bootstrap-transition.js"></script>
+    <script src="stuff/bootstrap-alert.js"></script>
+    <script src="stuff/bootstrap-modal.js"></script>
+    <script src="stuff/bootstrap-dropdown.js"></script>
+    <script src="stuff/bootstrap-scrollspy.js"></script>
+    <script src="stuff/bootstrap-tab.js"></script>
+    <script src="stuff/bootstrap-tooltip.js"></script>
+    <script src="stuff/bootstrap-popover.js"></script>
+    <script src="stuff/bootstrap-button.js"></script>
+    <script src="stuff/bootstrap-collapse.js"></script>
+    <script src="stuff/bootstrap-carousel.js"></script>
+    <script src="stuff/bootstrap-typeahead.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			
+			// ready function
+			document.lastSearch = $("#maininput").val();
+			bindStatics();
+			checkSync();
+			updateSearch();
+
+		});
+	</script>
+
+
+  </body>
 </html>

@@ -1,48 +1,23 @@
 document.folds = [];
 document.transFolds = [];
-document.langFilter = "";
 document.searchTimeout = false;
 document.keyIsDown = false;
-document.addedNew = false;
-editmode = false;
 document.lastSearch = "";
 document.allCategories = [];
 document.translation = []; // array of arrays holding all translations, including English strings. translation[34]['german'] = "das ist gut";
 document.msgSelected = -1;
 document.activeStep = 1; // 1 or 2
 document.searchWidth = 0;
+document.ticktock = false; // currently not updating times
 
 function popThis(element, array) {
-	returnArr = array.slice(0);
+	returnArr = array.slice(0); // make a copy of the array
 	for (id in array) {
 		if (array[id] == element) {
-			returnArr.splice(id, 1);
+			returnArr.splice(id, 1); // remove the element passed to the function
 		}
 	}
 	return returnArr;
-}
-
-
-function changeCategory(id, newCat) {
-
-	jsonWrap("/changecat/", { id : id, newcat : newCat}, takeAnswer);
-
-}
-
-function setFilter(ele) {
-
-	lang = ele.text().toLowerCase();
-	if (lang == document.langFilter) {
-		document.langFilter = "";
-		ele.removeClass("filter_lock");
-	} else {
-		oldFilter = document.langFilter;
-		$("#"+oldFilter+"filter").removeClass("filter_lock");
-		document.langFilter = lang;
-		ele.addClass("filter_lock");
-	}
-	updateSearch();
-
 }
 
 function selectElementText(el, win) {
@@ -69,7 +44,6 @@ function doubleDigit(me) {
 		me = "0" + me;
 	} 
 	return me;
-
 }
 
 function dbug(stuff) {
@@ -88,6 +62,35 @@ function dbug(stuff) {
 	}
 
 }
+
+function timeTick() {
+	if (!document.ticktock) {
+		return;
+	}
+	getTime();
+	setTimeout('timeTick()', 60000);
+}
+
+function getTime(posix, cb) {
+	if (!cb) {
+		cb = telltime;
+	}
+	if (posix) {
+		jsonWrap("gettime/", {'time': posix}, cb);
+	} else {
+		jsonWrap("gettime/", {}, cb);
+	}
+}
+
+function telltime(answer) {
+	for (id in answer) {
+		region = answer[id];
+		$("#datetime" + id).text(region[0]);
+		dbug("Setting #datetime" + id + " to " + region[0]);
+	}
+
+}
+
 function jsonWrap(url, dict, cb) {
 
 	$("#ajaxstatus").text("Sending...");
@@ -101,13 +104,14 @@ function jsonWrap(url, dict, cb) {
 }
 
 function updateSearch() {
-	if ($("#ajaxstatus").text() != "synced") {
+	// Yes, I'm checking for the exact text inside an html element. No, I do not value my sanity very highly
+	status = $.trim($("#ajaxstatus").text());
+	if (status != "synced") {
 		return;
 	}
 	query = $("#maininput").val();
-	jsonWrap("/ajax/", {query: query, filter: document.langFilter}, takeAnswer);
+	jsonWrap("ajax/", {query: query}, takeAnswer);
 }
-
 
 function newlines(text) {
 	result = "";
@@ -119,35 +123,13 @@ function newlines(text) {
 	return result;
 }
 
-function addCat() {
-
-	category = prompt("Name the new category");
-	if (!category) {
-		return;
-	}
-	$("#maininput").val("");
-	document.addedNew = true;
-	catForFold = category.replace(/ /g, "-");
-	document.folds[catForFold] = "visible";
-	jsonWrap("/addnewrow/?category=" + category, {}, takeAnswer);
-}
-
-function addNewMessage() {
-	category = $(this).attr("id");
-	catForFolds = category.replace(/ /g, "-");
-	document.folds[catForFolds] = "visible";
-	
-	$("#maininput").val("");
-	document.addedNew = true;
-	jsonWrap("/addnewrow/?category=" + category, {}, takeAnswer);
-}
-
 function takeAnswer(JSONobj) {
-	document.translation = [];
-	$("#allcats").empty();
-	document.lastSearch = JSONobj.query;
-	tempCategories = [];
+	document.translation = []; // get rid of translations
+	$("#messages").empty(); // empty the messages div
+	document.lastSearch = JSONobj.query; // save query for reusage
+	tempCategories = []; // will save category names in here
 	for (rowid in JSONobj.reply) {
+		// each item in the JSONobj is a category with name, numMatches and messages
 		category = JSONobj.reply[rowid];
 		tempCategories.push(category.name);
 		resString = "results";
@@ -155,10 +137,9 @@ function takeAnswer(JSONobj) {
 			resString = "result";
 		}
 		// CONSTRUCTING RESULTS
-		html = "<div class='catdeselected cat_toggle' id='" + category.name.replace(/ /g, "-") + "'> <span class='fw'>[+]</span> " + category.name + " (" + category.numMatches + " " + resString + " found)</div>";
-		
-		html += "<table class='category_table result_"+category.name.replace(/ /g, "-") +"'>";
-		
+		catSafe = category.name.replace(/ /g, "-");
+		html = "<div class='row-fluid cat_toggle closedFold' id='" + catSafe + "'><div class='span1 toggleIcon' id='" + catSafe + "-icon'><i class='icon-plus'></i></div><div class='cat_toggle span11'> " + category.name + " (" + category.numMatches + " " + resString + " found)</div></div>"; // I wished you could toggle cats in real life
+		// create a row for the toggleable cat header. 1/11 split for +/- and cat name + numMatches
 		for (msgid in category.messages) {
 			row = category.messages[msgid];
 			document.translation[row.id] = [];
@@ -170,43 +151,30 @@ function takeAnswer(JSONobj) {
 			document.translation[row.id]['korean'] = row.korean;
 			document.translation[row.id]['greek'] = row.greek;
 			document.translation[row.id]['romanian'] = row.romanian;
-			
-			html +="<tr class='msgrow' id='row"+row.id+"'><td><input type=button class='selectrow' value='Select'></td><td>"		
-			html += "<td>"+row.english+"</td></tr>";
+			// save translations in global 
+			html +="<div class='msgrow msgnormal row-fluid result_"+ catSafe + "' id='row"+row.id+"'>";
+			html += "<div class='span12'>"+row.english+"</div></div>";
+			// one row per message, split as above
 		}
-		if (window.editmode) { 
-// foobared
-		}
-		html += "</table>"; // category_table
-		$("#allcats").append(html);
+		
+		$("#messages").append(html);
+
 	}
-	document.allCategories = tempCategories;
+	document.allCategories = tempCategories; // write all cats to global
 	for (id in tempCategories) {
-		foldCat = tempCategories[id].replace(/ /g, "-");
-		tempFolds = document.folds;
+		foldCat = tempCategories[id].replace(/ /g, "-"); // "short messages" -> "short-messages"
 		if (!(foldCat in document.folds)) {
-			document.folds[foldCat] = "invisible";
-			tempFolds = popThis(foldCat, tempFolds);
-		} else {
-			tempFolds = popThis(foldCat, tempFolds);
+			document.folds[foldCat] = "invisible"; // if there is a category we've not seen previously, default it to collapsed
 		}
 	}
-	for (id in tempFolds) {
-		popCat = tempFolds[id];
-		document.folds = popThis(popCat, document.folds);
-	}
-	bindStuff();
+	bindDynamics(); // bind message select and category collapse functionality to dynamically created elements
 	updateFolds();
-	if (document.addedNew) {
-		newRow = JSONobj.newRow;
-		$("#english_" + newRow).click();
-		document.addedNew = false;
-	}
 }
 
 function checkSync() {
 	if (!document.keyIsDown) {
 		if (document.lastSearch != $("#maininput").val()) {
+			dbug("checksync updating search");
 			updateSearch();
 		} 
 	}
@@ -214,18 +182,12 @@ function checkSync() {
 
 }
 
-function scrollDown() {
-	$("body").animate({scrollTop: $("body").height()}, 200);
-}
-
-function scrollUp() {
-	$("body").animate({scrollTop: "0px"}, 200);
-}
-
 function inputKeyUp() {
+	dbug("keyup");
 	e = document.keyUpEvent;
 	document.keyIsDown = false;
 	if (e.keyCode == 13 || e.keyCode == 27) {
+		dbug("blurring...");
 		$(this).blur();
 		updateSearch();
 		return;
@@ -235,29 +197,41 @@ function inputKeyUp() {
 
 function resizeBody() {
 
-	$("body").height(window.innerHeight);
+	totalHeight = window.innerHeight - 50;
+	bigger = Math.floor(totalHeight * 0.6);
+	smaller = Math.floor(totalHeight * 0.4);
+	if (document.activeStep == 1) {
+		$("#step1").css("height", bigger + "px");
+		$("#step2").css("height", smaller + "px");
+	} else {
+		$("#step2").css("height", bigger + "px");
+		$("#step1").css("height", smaller + "px");
+	}
+}
+
+function scrollView(ele, con) {
+	// element and the container with overflow: scroll; both need to be jquery elements
+	curTop = ele.position().top;
+	curScroll = con.scrollTop();
+	// we want to scroll to relative position 100. Thus: 100 - curTop = adjustment to be made to curScroll
+	adjustment = curTop - 100;
+	newScroll = curScroll + adjustment;
+	con.scrollTop(newScroll);
 
 }
 
-function bindStuff() {
-
+function bindStatics() {
+	// event bindings for elements that persist through searches and similar
 	$(window).resize(function () {
 		resizeBody();
 	});
 	resizeBody();
-	$("#wrapper").click(function (e) {
-		dbug("wrapper clicked");
+	$("#step1").click(function (e) {
 		if (document.activeStep === 2) {
 			switchSteps();
 			e.stopPropagation();
 			// does not work for some reason
 		}
-	});
-	$(".msgrow").click(function (e) {
-		rowid = $(this).attr("id").replace(/row/, "");
-		selectmsg(rowid);
-		e.stopPropagation();
-		
 	});
 	$("#maininput").focus();
 	$("#maininput").keydown(function () {
@@ -265,7 +239,6 @@ function bindStuff() {
 			document.keyIsDown = true;
 		}
 	});
-	// Bind search functionality
 	$("#maininput").keyup(function (e) {
 		if (document.searchTimeout) {
 			clearTimeout(document.searchTimeout);
@@ -274,107 +247,58 @@ function bindStuff() {
 		document.searchTimeout = setTimeout("inputKeyUp()", 200);
 	});
 
+}
+
+function bindDynamics() {
+	// event bindings for elements that are destroyed and recreated on searches
+	$(".msgrow").click(function (e) {
+		rowid = $(this).attr("id").replace(/row/, "");
+		selectmsg(rowid);
+		e.stopPropagation();
+		
+	});
 	$(".cat_toggle").click(function() {
 		cat = $(this).attr("id");
-		//cat = $(this).text().replace(/ \[.*\]/, "").replace(/ /g, "-");
 		toggleVis(cat);
 	});
-	if (window.editmode) {
-		$(".addnewmessage").click(addNewMessage);
-		$(".filterbutton").click(function() {
-			document.filter = $(this).val();
-			updateSearch();
-		});
 
-		$(".resultfield").click(function() {
-			if ($(this).data("edit")) {
-				return;
-			} 
-			$(this).data("edit", true);
-			my_id = $(this).attr("id");
-			orig_text = $(this).text();
-			$(this).data('original_text', $(this).html());
-			$(this).empty();
-			newhtml = "<textarea id='" + my_id + "_editbox' class='editbox'>" + orig_text + "</textarea><br><input type=button  parentid='" + my_id + "' value='Save' class='savebutton styleButton'><input type=button id='" + my_id + "_cancelbutton' parentid='" + my_id + "' value='Cancel' class='cancelbutton styleButton'> <input type=button parentid='"+my_id +"' value='Delete' class='deletebutton styleButton'><br><select class='changecat' id='changecat"+my_id+"'>";
-			for (id in document.allCategories) {
-				cat = document.allCategories[id];
-				newhtml = newhtml + "<option value='"+ cat + "'>" + cat + "</option>";
-			}
-			$(this).append(newhtml);
-			$(".changecat").change(function () {
-			
-				newCat = $(this).val();
-				fieldId = $(this).attr("id").replace("changecat", "");
-				changeCategory(fieldId, newCat);
-				$("#"+fieldId+"_cancelbutton").click();
-				
-			
-			});
-			$(".cancelbutton").click(function () {
-				my_id = $(this).attr("parentid");
-				field = $("#" + my_id);
-				field.empty();
-				field.data("edit", false);
-				field.append(field.data('original_text'));
-				field.addClass("resultfield");
-				return false;
-			});
-			$(".savebutton").click(function () {
-				my_id = $(this).attr("parentid");
-				ebox = $("#" + my_id + "_editbox");
-				new_text = ebox.val();
-				console.log("about to save new text " + new_text + " for " + my_id);
-				//# SEND NEW VALUE TO SERVER
-				jsonWrap("/takeedit/", {newtext : new_text, filter: document.langFilter, id : my_id}, takeAnswer);
-				field = $("#" + my_id);
-				field.empty();
-				field.data("edit", false);
-				field.append(newlines(new_text));
-				field.addClass("resultfield");
-				return false;
-			});
-			$(".deletebutton").click(function () {
-				if (confirm("Are you certain you want to delete this message?")) {
-					my_id = $(this).attr("parentid");
-					jsonWrap("/delete/", {id : my_id}, takeAnswer);
-					
-				}
-			});
+}
 
-			$(this).removeClass("resultfield");
-			$(this).click(function() {});
-			
-			ebox = $("#" + my_id + "_editbox");
-			ebox.focus()
-			return false;
-		});
-
+function flipClasses(elementId, class1, class2) {
+	// given an element (or an elementId) and two class names, flip between the classes; if element has neither class, do nothing
+	// fool-proofed against Daniel
+	if (typeof(elementId) === "string") {
+		if (elementId.charAt(0) === "#") {
+			elementId = elementId.slice(1);
+		}
+		element = $("#"+elementId);
 	} else {
-		$(".resultfield").click(function() {
-			selectElementText(document.getElementById($(this).attr("id")), document.window);
-		});
+		element = elementId;
 	}
-};
+	if ((!element.hasClass(class1)) && (!element.hasClass(class2))) {
+		return;
+	}
+	if (element.hasClass(class1)) {
+		element.removeClass(class1);
+		element.addClass(class2);
+	} else {
+		element.addClass(class1);
+		element.removeClass(class2);
+	}
+}
 
 function updateFolds() {
 	for (cat in document.folds) {
 	
 		if (document.folds[cat] == "visible") {
-			oldText = $("#" + cat).html();
-			$("#" + cat).removeClass("catdeselected");
-			$("#" + cat).addClass("catselected");
-			
-			newText = oldText.replace("[+]", "[-]");
-			$("#" + cat).html(newText);
+			// This fold is open; the items are showing, the click icon is a minus, the select row itself is sunk into the page
+			$("#"+cat+"-icon").html("<i class='icon-minus'></i>");
+			flipClasses(cat, "openFold", "closedFold");
 			$(".result_" + cat).css("display", "");
 		
 		} else {
-			oldText = $("#" + cat).html();
-			newText = oldText.replace("[-]", "[+]");
-			$("#" + cat).addClass("catdeselected");
-			$("#" + cat).removeClass("catselected");
-
-			$("#" + cat).html(newText);
+			$("#"+cat+"-icon").html("<i class='icon-plus'></i>");
+			flipClasses(cat, "openFold", "closedFold");
 			$(".result_" + cat).css("display", "none");
 		}
 	
@@ -398,46 +322,44 @@ function switchSteps() {
 		document.activeStep = 2;
 		$("#tempstaging").css("display", "none");
 		$("#actualstaging").css("display", "block");
-		$(".step1").addClass("guidestepinactive");
-		$(".step2").removeClass("guidestepinactive");
-		$("#wrapper").addClass("areainactive");
-		$("#stagingarea").removeClass("areainactive");
-		$("#wrapper").animate({'height': '40%'}, 500);
-		$("#stagingarea").animate({'height': '60%'}, 500);
-		
-		popStep(0, 2);
+		$("#step1").addClass("areainactive");
+		$("#step2").removeClass("areainactive");
+		$("#step2").css("overflow-y", "scroll");
+		document.ticktock = true;
+		timeTick();
+
 	} else {
 		document.activeStep = 1;
 		$("#tempstaging").css("display", "block");
 		$("#actualstaging").css("display", "none");
-		$(".step1").removeClass("guidestepinactive");
-		$(".step2").addClass("guidestepinactive");
-		$("#wrapper").removeClass("areainactive");
-		$("#stagingarea").addClass("areainactive");
-		$("#wrapper").animate({"height": "60%"}, 500);
-		$("#stagingarea").css({"height": "40%"}, 500);
-		popStep(0, 1);
+		$("#step1").removeClass("areainactive");
+		$("#step2").addClass("areainactive");
+		$("#step2").css("overflow-y", "hidden");
+		document.ticktock = false;
 	}
+	resizeBody();
 }
 
 function selectmsg(msgid) {
 	if (document.activeStep === 1) {
 		switchSteps();
 	} 
-	$("#row"+document.msgSelected).removeClass("selected");
-	$("#row"+msgid).addClass("selected");
+	ele = $("#row" + msgid);
+	flipClasses("row"+document.msgSelected, "selected", "msgnormal"); // unselect old selected msg
+	flipClasses(ele, "selected", "msgnormal"); // select new message
+	scrollView(ele, $("#step1"));
 	document.msgSelected = msgid;
 	trans = document.translation[msgid];
-	$("#stagingNAEN").html(trans.english);
-	$("#stagingEUWEN").html(trans.english);
-	$("#stagingEUNEEN").html(trans.english);
-	$("#stagingDE").html(trans.german);
-	$("#stagingFR").html(trans.french);
-	$("#stagingES").html(trans.spanish);
-	$("#stagingPL").html(trans.polish);
-	$("#stagingRO").html(trans.romanian);
-	$("#stagingGR").html(trans.greek);
-	$("#stagingKR").html(trans.korean);
+	$("#stagingna").html(trans.english);
+	$("#stagingeuw").html(trans.english);
+	$("#stagingeune").html(trans.english);
+	$("#stagingde").html(trans.german);
+	$("#stagingfr").html(trans.french);
+	$("#staginges").html(trans.spanish);
+	$("#stagingpl").html(trans.polish);
+	$("#stagingro").html(trans.romanian);
+	$("#staginggr").html(trans.greek);
+	$("#stagingkr").html(trans.korean);
 
 }
 
@@ -451,3 +373,5 @@ function popStep(curSec, step) {
 		setTimeout("popStep("+curSec+", "+step+")", 50);
 	}
 }
+
+
