@@ -34,6 +34,12 @@
 				<form class="form-vertical">
 					<fieldset>
 						<legend>Assemble the message</legend>
+							Select language to show: 
+							<select id="pLang">
+							{% for shortcut, data in locaData.items %}
+							<option value="{{shortcut}}">{{data.region}}</option>
+							{% endfor %}
+							</select>
 							<div style="margin-bottom: 0px;" class="control-group">
 								<label class="control-label" for="pD-title">Thread title</label>
 								<div class="controls">
@@ -62,16 +68,6 @@
 								</div>
 							</div>
 							
-					</fieldset>
-					<fieldset>
-						<legend>Fun with times! Fun times!</legend>
-							<div class="control-group">
-								<label class="control-label" for="pD-localtime">Time in Los Angeles:</label>
-								<div class="controls">
-									<span type="text" id="pD-timena" class="input-xlarge uneditable-input"></span>
-								</div>
-							</div>
-					
 					</fieldset>
 				</form>
 
@@ -138,6 +134,7 @@
 			bindStatics();
 			checkSync();
 			updateSearch();
+			getLocaData();
 
 		});
 	</script>

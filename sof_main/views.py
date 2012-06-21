@@ -25,8 +25,9 @@ locaData['pl'] = {'language': 'polish', 'region': 'Poland', 'forumurl': 'http://
 locaData['gr'] = {'language': 'greek', 'region': 'Greece', 'forumurl': 'http://eune.leagueoflegends.com/board/forumdisplay.php?f=166', 'tz': 'Europe/Athens', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M Ώρα Ελλάδας'}
 locaData['kr'] = {'language': 'korean', 'region': 'Korea', 'forumurl': '', 'tz': 'Asia/Seoul', 'datefmt': '%Y년 %m월 %d일', 'timefmt': '%H시 %M분 %Z'}
 
-
-
+def getld(request):
+	ro = json.dumps(locaData)
+	return HttpResponse(ro)
 
 def dbug(text):
 	try:

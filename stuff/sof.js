@@ -9,6 +9,67 @@ document.msgSelected = -1;
 document.activeStep = 1; // 1 or 2
 document.searchWidth = 0;
 document.ticktock = false; // currently not updating times
+document.postTitle = [];
+document.postBody = [];
+document.postTitleTimestamped = false;
+document.postBodyTimestamped = false;
+document.postRegion = 'na';
+document.nowTrans = []; // object with localized timestamps for the time now (local server time)
+document.lD = []; // locadata; a dictionary of shortcuts, language names, region names, date formats etc
+
+function getLocaData() {
+	jsonWrap("getlocadata/", {}, takeLocaData);
+}
+
+function stampTitle() {
+	document.postTitleTimestamped = ($("#pD-tstamptitle").attr('checked') === 'checked');
+	updatePost();
+}
+
+function stampBody() {
+	document.postBodyTimestamped = ($("#pD-tstampbody").attr('checked') === 'checked');
+	updatePost();
+}
+
+function takeLocaData(locaData) {
+	document.lD = locaData;
+}
+
+function useAsTitle() {
+	document.postTitle = document.translation[document.msgSelected];
+	updatePost();
+}
+
+function useAsBody() {
+	document.postBody = document.translation[document.msgSelected];
+	updatePost();
+}
+
+function changePostLanguage() {
+	region = $("#pLang").val();
+	document.postRegion = region;
+	updatePost();
+}
+
+function updatePost() {
+
+	region = document.postRegion;
+
+	timestamp = document.nowTrans[region][0];
+	dbug("timestamp is " + timestamp);
+	pTitle = document.postTitle[document.lD[region].language];
+	pBody = document.postBody[document.lD[region].language];
+	if (document.postTitleTimestamped) {
+		pTitle = "[" + timestamp + "] " +  pTitle;
+	}
+	if (document.postBodyTimestamped) {
+		pBody = "[" + timestamp + "] " +  pBody;
+	}
+	dbug("pTitle is " + pTitle);
+	$("#pD-title").html(pTitle);
+	$("#pD-body").html(pBody);
+
+}
 
 function popThis(element, array) {
 	returnArr = array.slice(0); // make a copy of the array
@@ -85,8 +146,8 @@ function getTime(posix, cb) {
 function telltime(answer) {
 	for (id in answer) {
 		region = answer[id];
+		document.nowTrans[id] = region;
 		$("#datetime" + id).text(region[0]);
-		dbug("Setting #datetime" + id + " to " + region[0]);
 	}
 
 }
@@ -183,7 +244,6 @@ function checkSync() {
 }
 
 function inputKeyUp() {
-	dbug("keyup");
 	e = document.keyUpEvent;
 	document.keyIsDown = false;
 	if (e.keyCode == 13 || e.keyCode == 27) {
@@ -222,9 +282,14 @@ function scrollView(ele, con) {
 
 function bindStatics() {
 	// event bindings for elements that persist through searches and similar
+	$("#useAsTitle").click(function() { useAsTitle(); });
+	$("#useAsBody").click(function() { useAsBody(); });
+	
 	$(window).resize(function () {
 		resizeBody();
 	});
+	$("#pD-tstamptitle").change(function() {stampTitle()});
+	$("#pD-tstampbody").change(function() {stampBody()});
 	resizeBody();
 	$("#step1").click(function (e) {
 		if (document.activeStep === 2) {
@@ -246,7 +311,8 @@ function bindStatics() {
 		document.keyUpEvent = e;
 		document.searchTimeout = setTimeout("inputKeyUp()", 200);
 	});
-
+	$("#pLang").change(function () { changePostLanguage(); });
+	
 }
 
 function bindDynamics() {
@@ -350,16 +416,20 @@ function selectmsg(msgid) {
 	scrollView(ele, $("#step1"));
 	document.msgSelected = msgid;
 	trans = document.translation[msgid];
-	$("#stagingna").html(trans.english);
-	$("#stagingeuw").html(trans.english);
-	$("#stagingeune").html(trans.english);
-	$("#stagingde").html(trans.german);
-	$("#stagingfr").html(trans.french);
-	$("#staginges").html(trans.spanish);
-	$("#stagingpl").html(trans.polish);
-	$("#stagingro").html(trans.romanian);
-	$("#staginggr").html(trans.greek);
-	$("#stagingkr").html(trans.korean);
+	for (id in document.lD) {
+		$("#staging" + id).html(trans[document.lD[id].language]);
+	}
+	
+	// $("#stagingna").html(trans.english);
+	// $("#stagingeuw").html(trans.english);
+	// $("#stagingeune").html(trans.english);
+	// $("#stagingde").html(trans.german);
+	// $("#stagingfr").html(trans.french);
+	// $("#staginges").html(trans.spanish);
+	// $("#stagingpl").html(trans.polish);
+	// $("#stagingro").html(trans.romanian);
+	// $("#staginggr").html(trans.greek);
+	// $("#stagingkr").html(trans.korean);
 
 }
 
