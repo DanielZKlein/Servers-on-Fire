@@ -8,7 +8,6 @@ document.translation = []; // array of arrays holding all translations, includin
 document.msgSelected = -1;
 document.activeStep = 1; // 1 or 2
 document.searchWidth = 0;
-document.ticktock = false; // currently not updating times
 document.postTitle = [];
 document.postBody = [];
 document.postTitleTimestamped = false;
@@ -16,6 +15,26 @@ document.postBodyTimestamped = false;
 document.postRegion = 'na';
 document.nowTrans = []; // object with localized timestamps for the time now (local server time)
 document.lD = []; // locadata; a dictionary of shortcuts, language names, region names, date formats etc
+
+function bodyHover() {
+	a = $("#along");
+	a.removeClass("hide");
+}
+
+function bodyOut() {
+	a = $("#along");
+	a.addClass("hide");
+}
+
+function titleHover() {
+	a = $("#ashort");
+	a.removeClass("hide");
+}
+
+function titleOut() {
+	a = $("#ashort");
+	a.addClass("hide");
+}
 
 function getLocaData() {
 	jsonWrap("getlocadata/", {}, takeLocaData);
@@ -56,7 +75,6 @@ function updatePost() {
 	region = document.postRegion;
 
 	timestamp = document.nowTrans[region][0];
-	dbug("timestamp is " + timestamp);
 	pTitle = document.postTitle[document.lD[region].language];
 	pBody = document.postBody[document.lD[region].language];
 	if (document.postTitleTimestamped) {
@@ -65,9 +83,8 @@ function updatePost() {
 	if (document.postBodyTimestamped) {
 		pBody = "[" + timestamp + "] " +  pBody;
 	}
-	dbug("pTitle is " + pTitle);
 	$("#pD-title").html(pTitle);
-	$("#pD-body").html(pBody);
+	$("#pD-body").html(newlines(pBody));
 
 }
 
@@ -125,11 +142,8 @@ function dbug(stuff) {
 }
 
 function timeTick() {
-	if (!document.ticktock) {
-		return;
-	}
 	getTime();
-	setTimeout('timeTick()', 60000);
+	setTimeout('timeTick()', 30000);
 }
 
 function getTime(posix, cb) {
@@ -149,6 +163,7 @@ function telltime(answer) {
 		document.nowTrans[id] = region;
 		$("#datetime" + id).text(region[0]);
 	}
+	updatePost();
 
 }
 
@@ -175,6 +190,9 @@ function updateSearch() {
 }
 
 function newlines(text) {
+	if (!text) {
+		return "";
+	}
 	result = "";
 	lines = text.split("\n");
 	for (id in lines) {
@@ -214,7 +232,7 @@ function takeAnswer(JSONobj) {
 			document.translation[row.id]['romanian'] = row.romanian;
 			// save translations in global 
 			html +="<div class='msgrow msgnormal row-fluid result_"+ catSafe + "' id='row"+row.id+"'>";
-			html += "<div class='span12'>"+row.english+"</div></div>";
+			html += "<div class='span12'>"+newlines(row.english)+"</div></div>";
 			// one row per message, split as above
 		}
 		
@@ -246,27 +264,16 @@ function checkSync() {
 function inputKeyUp() {
 	e = document.keyUpEvent;
 	document.keyIsDown = false;
-	if (e.keyCode == 13 || e.keyCode == 27) {
-		dbug("blurring...");
-		$(this).blur();
-		updateSearch();
-		return;
-	}
 	updateSearch();
 }
 
 function resizeBody() {
 
-	totalHeight = window.innerHeight - 50;
+	totalHeight = window.innerHeight - 100;
 	bigger = Math.floor(totalHeight * 0.6);
 	smaller = Math.floor(totalHeight * 0.4);
-	if (document.activeStep == 1) {
-		$("#step1").css("height", bigger + "px");
-		$("#step2").css("height", smaller + "px");
-	} else {
-		$("#step2").css("height", bigger + "px");
-		$("#step1").css("height", smaller + "px");
-	}
+	$("#step1").css("height", bigger + "px");
+	$("#step2").css("height", smaller + "px");
 }
 
 function scrollView(ele, con) {
@@ -280,29 +287,39 @@ function scrollView(ele, con) {
 
 }
 
-function bindStatics() {
-	// event bindings for elements that persist through searches and similar
+function bindHovers() {
+	$("#pD-title").mouseover(function() { titleHover(); });
+	$("#pD-title").mouseout(function() { titleOut(); });
+	$("#pD-body").mouseover(function() { bodyHover(); });
+	$("#pD-body").mouseout(function() { bodyOut(); });
+	$("#pD-body").click(function() { useAsBody(); });
+	$("#pD-title").click(function() { useAsTitle(); });
 	$("#useAsTitle").click(function() { useAsTitle(); });
 	$("#useAsBody").click(function() { useAsBody(); });
-	
+}
+
+function bindStatics() {
+
+	// event bindings for elements that persist through searches and similar
+	$("body").unload(dbug("unloading"));
 	$(window).resize(function () {
 		resizeBody();
 	});
 	$("#pD-tstamptitle").change(function() {stampTitle()});
 	$("#pD-tstampbody").change(function() {stampBody()});
 	resizeBody();
-	$("#step1").click(function (e) {
-		if (document.activeStep === 2) {
-			switchSteps();
-			e.stopPropagation();
-			// does not work for some reason
-		}
-	});
 	$("#maininput").focus();
-	$("#maininput").keydown(function () {
+	$("#maininput").keydown(function (e) {
 		if (!document.keyIsDown) {
 			document.keyIsDown = true;
 		}
+		if (e.keyCode == 13 || e.keyCode == 27) {
+			dbug("blurring...");
+			$(this).blur();
+			updateSearch();
+			e.stopPropagation();
+			return;
+	} 
 	});
 	$("#maininput").keyup(function (e) {
 		if (document.searchTimeout) {
@@ -383,33 +400,8 @@ function toggleVis(cat) {
 	updateFolds();
 }
 
-function switchSteps() {
-	if (document.activeStep === 1) {
-		document.activeStep = 2;
-		$("#tempstaging").css("display", "none");
-		$("#actualstaging").css("display", "block");
-		$("#step1").addClass("areainactive");
-		$("#step2").removeClass("areainactive");
-		$("#step2").css("overflow-y", "scroll");
-		document.ticktock = true;
-		timeTick();
-
-	} else {
-		document.activeStep = 1;
-		$("#tempstaging").css("display", "block");
-		$("#actualstaging").css("display", "none");
-		$("#step1").removeClass("areainactive");
-		$("#step2").addClass("areainactive");
-		$("#step2").css("overflow-y", "hidden");
-		document.ticktock = false;
-	}
-	resizeBody();
-}
-
 function selectmsg(msgid) {
-	if (document.activeStep === 1) {
-		switchSteps();
-	} 
+	bindHovers();
 	ele = $("#row" + msgid);
 	flipClasses("row"+document.msgSelected, "selected", "msgnormal"); // unselect old selected msg
 	flipClasses(ele, "selected", "msgnormal"); // select new message
@@ -417,22 +409,9 @@ function selectmsg(msgid) {
 	document.msgSelected = msgid;
 	trans = document.translation[msgid];
 	for (id in document.lD) {
-		$("#staging" + id).html(trans[document.lD[id].language]);
+		$("#staging" + id).html(newlines(trans[document.lD[id].language]));
 	}
-	
-	// $("#stagingna").html(trans.english);
-	// $("#stagingeuw").html(trans.english);
-	// $("#stagingeune").html(trans.english);
-	// $("#stagingde").html(trans.german);
-	// $("#stagingfr").html(trans.french);
-	// $("#staginges").html(trans.spanish);
-	// $("#stagingpl").html(trans.polish);
-	// $("#stagingro").html(trans.romanian);
-	// $("#staginggr").html(trans.greek);
-	// $("#stagingkr").html(trans.korean);
-
 }
-
 
 function popStep(curSec, step) {
 	ele = $(".step" + step);

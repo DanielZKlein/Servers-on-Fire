@@ -1,0 +1,55 @@
+<html>
+<head>
+<script src="../stuff/jquery-1.4.2.min.js"></script>
+<script src="../stuff/sof.js"></script>
+<!--<link rel="stylesheet" href="../stuff/sof.css">-->
+<script>
+
+document.editmode = true;
+
+$(function () {
+	bindStuff();
+});
+
+	</script>
+</head>
+
+<body>
+<div id="ajaxstatus">synced</div>
+Search:
+<input id=maininput style="width: 500px;" type=text maxlength=200>
+<br>
+Show only messages with missing language:
+<input type=button value="french" class="filterbutton">
+<input type=button value="german" class="filterbutton">
+<input type=button value="spanish" class="filterbutton">
+<input type=button value="polish" class="filterbutton">
+<input type=button value="all" class="filterbutton">
+<table id=unholy width=100%>
+<colgroup width=20%>
+<colgroup width=20%>
+<colgroup width=20%>
+<colgroup width=20%>
+<colgroup width=20%>
+<tr><th>English</th><th>French</th><th>German</th><th>Spanish</th><th>Polish</th></tr>
+<tr>
+<td colspan=5><input value="Add new message" type=button id="addnewmessage"></td>
+</tr>
+
+{% for message in messages %}
+<tr class="resultrow">
+	<td class="resultfield" id="english_{{message.id}}">{{message.english|linebreaks}}</td>
+	<td class="resultfield" id="french_{{message.id}}">{{message.french|linebreaks}}</td>
+	<td class="resultfield" id="german_{{message.id}}">{{message.german|linebreaks}}</td>
+	<td class="resultfield" id="spanish_{{message.id}}">{{message.spanish|linebreaks}}</td>
+	<td class="resultfield" id="polish_{{message.id}}">{{message.polish|linebreaks}}</td>
+</tr>
+{% endfor %}
+</table>
+<br><br><br><br>
+<br><br><br><br>
+
+<br><br><br><br>
+
+</body>
+</html>

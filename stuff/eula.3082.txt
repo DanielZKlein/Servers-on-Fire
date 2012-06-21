@@ -1,0 +1,17 @@
+<html>
+<head><title>DATE FUN</title>
+<script type="text/javascript" src="date.js"></script>
+<script>
+function updateTimes() {
+
+	
+
+}
+
+alert(Date.now().setTimezone("PST"));
+</script>
+</head>
+<body>
+<div id="me"></div>
+</body>
+</html>

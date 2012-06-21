@@ -150,14 +150,14 @@ def getMsgsForAjax(query="", filter=""):
 		thisRow["messages"] = []
 		for msg in messages:
 			newRow = {}
-			newRow["english"] = linebreaks(msg.english)
-			newRow["french"] = linebreaks(msg.french)
-			newRow["spanish"] = linebreaks(msg.spanish)
-			newRow["german"] = linebreaks(msg.german)
-			newRow["polish"] = linebreaks(msg.polish)
-			newRow["romanian"] = linebreaks(msg.romanian)
-			newRow["korean"] = linebreaks(msg.korean)
-			newRow["greek"] = linebreaks(msg.greek)
+			newRow["english"] = msg.english
+			newRow["french"] = msg.french
+			newRow["spanish"] = msg.spanish
+			newRow["german"] = msg.german
+			newRow["polish"] = msg.polish
+			newRow["romanian"] = msg.romanian
+			newRow["korean"] = msg.korean
+			newRow["greek"] = msg.greek
 			newRow["id"] = msg.id
 			thisRow["messages"].append(newRow)
 		returnObject["reply"].append(thisRow)

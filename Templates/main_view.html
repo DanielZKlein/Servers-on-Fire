@@ -14,7 +14,9 @@
   </head>
 
   <body>
-<div id="ajaxstatus">synced</div>
+<img class="hide" id="ashort" src="stuff/arrowshort2.png" />
+<img class="hide" id="along" src="stuff/arrowlong2.png" />
+  <div id="ajaxstatus">synced</div>
 
   <div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
@@ -34,6 +36,7 @@
 				<form class="form-vertical">
 					<fieldset>
 						<legend>Assemble the message</legend>
+						<br>
 							Select language to show: 
 							<select id="pLang">
 							{% for shortcut, data in locaData.items %}
@@ -79,9 +82,6 @@
 					</div>
 				</div>
 				<div id="step2"> 
-					<div class="row-fluid areainactive" id="tempstaging">
-						<div class="span12">Please first select messaging above.</div>
-					</div>
 					<div id="actualstaging">
 						<table width=100% class="table-bordered table-striped table-condensed">
 							<colgroup>
@@ -135,6 +135,7 @@
 			checkSync();
 			updateSearch();
 			getLocaData();
+			timeTick();
 
 		});
 	</script>
