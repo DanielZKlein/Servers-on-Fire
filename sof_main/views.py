@@ -53,22 +53,13 @@ def changecat(request):
 	msg.save()
 	return ajax(request)
 		
-def newrow(request):
-	dbug("new row!")
-	cat = request.GET.get("category", "general")
-	newMessage = Message.objects.create()
-	newMessage.category = cat
-	newMessage.save()
-	ro = getMsgsForAjax() # newrow has no filters or query... for now
-	ro["newRow"] = newMessage.id
-	jDump = json.dumps(ro)
-	
-	return HttpResponse(jDump)
-
 def home(request):
 	
 	lD = locaData.copy()
-	sd = {'locaData': lD}
+	subjects = Message.objects.all().filter(category__contains = "subject")
+	
+	bodies = Message.objects.all().filter(category__contains = "body")
+	sd = {'locaData': lD, 'url': request.build_absolute_uri(), 'subjects': subjects, 'bodies': bodies}
 
 	return render_to_response("templates/main_view.html", sd)
 	

@@ -1,92 +1,18 @@
-document.folds = [];
-document.transFolds = [];
-document.searchTimeout = false;
+// CURRENT TODO: go to views.py and filter out newlines
+
 document.keyIsDown = false;
-document.lastSearch = "";
-document.allCategories = [];
-document.translation = []; // array of arrays holding all translations, including English strings. translation[34]['german'] = "das ist gut";
-document.msgSelected = -1;
-document.activeStep = 1; // 1 or 2
-document.searchWidth = 0;
-document.postTitle = [];
-document.postBody = [];
-document.postTitleTimestamped = false;
-document.postBodyTimestamped = false;
-document.postRegion = 'na';
-document.nowTrans = []; // object with localized timestamps for the time now (local server time)
-document.lD = []; // locadata; a dictionary of shortcuts, language names, region names, date formats etc
+document.lastSubjectSearch = "";
+document.lastBodySearch = "";
+document.lastSubject = false; // jQuery object of the div corresponding to the selected message
+document.lastBody = false;
+document.timeStampIt = false;
+document.subSelected = -1; // id of subject selected
+document.bodSelected = -1;
+document.activeStep = 1; 
+document.myURL = "";
+document.timeStamps = [];
 
-function bodyHover() {
-	a = $("#along");
-	a.removeClass("hide");
-}
 
-function bodyOut() {
-	a = $("#along");
-	a.addClass("hide");
-}
-
-function titleHover() {
-	a = $("#ashort");
-	a.removeClass("hide");
-}
-
-function titleOut() {
-	a = $("#ashort");
-	a.addClass("hide");
-}
-
-function getLocaData() {
-	jsonWrap("getlocadata/", {}, takeLocaData);
-}
-
-function stampTitle() {
-	document.postTitleTimestamped = ($("#pD-tstamptitle").attr('checked') === 'checked');
-	updatePost();
-}
-
-function stampBody() {
-	document.postBodyTimestamped = ($("#pD-tstampbody").attr('checked') === 'checked');
-	updatePost();
-}
-
-function takeLocaData(locaData) {
-	document.lD = locaData;
-}
-
-function useAsTitle() {
-	document.postTitle = document.translation[document.msgSelected];
-	updatePost();
-}
-
-function useAsBody() {
-	document.postBody = document.translation[document.msgSelected];
-	updatePost();
-}
-
-function changePostLanguage() {
-	region = $("#pLang").val();
-	document.postRegion = region;
-	updatePost();
-}
-
-function updatePost() {
-
-	region = document.postRegion;
-
-	timestamp = document.nowTrans[region][0];
-	pTitle = document.postTitle[document.lD[region].language];
-	pBody = document.postBody[document.lD[region].language];
-	if (document.postTitleTimestamped) {
-		pTitle = "[" + timestamp + "] " +  pTitle;
-	}
-	if (document.postBodyTimestamped) {
-		pBody = "[" + timestamp + "] " +  pBody;
-	}
-	$("#pD-title").html(pTitle);
-	$("#pD-body").html(newlines(pBody));
-
-}
 
 function popThis(element, array) {
 	returnArr = array.slice(0); // make a copy of the array
@@ -160,15 +86,21 @@ function getTime(posix, cb) {
 function telltime(answer) {
 	for (id in answer) {
 		region = answer[id];
-		document.nowTrans[id] = region;
-		$("#datetime" + id).text(region[0]);
+		document.timeStamps[id] = [];
+		document.timeStamps[id]['long'] = region[0];
+		document.timeStamps[id]['short'] = region[1];
+		$("#" + id + "time").text(region[1]);
 	}
-	updatePost();
+	if (document.activeStep == 3) {
+		updateReviewSubs();
+		updateReviewBods();
+	}
 
 }
 
 function jsonWrap(url, dict, cb) {
 
+	url = document.myURL + url;
 	$("#ajaxstatus").text("Sending...");
 	$.getJSON(url, dict, function(data) {
 		$("#ajaxstatus").text("Thinking...");
@@ -179,14 +111,107 @@ function jsonWrap(url, dict, cb) {
 
 }
 
-function updateSearch() {
-	// Yes, I'm checking for the exact text inside an html element. No, I do not value my sanity very highly
-	status = $.trim($("#ajaxstatus").text());
-	if (status != "synced") {
-		return;
+function mfilter(message) {
+	// array filter fun! array.filter(cb, thisobject); I'm passing query, which I'm looking for in the string
+	return (message.english.indexOf(this) > -1);
+}
+
+function checkSync() {
+	// in very rare situations, search bars can go out of sync; for instance if the page loses focus before a keyup can fire, or if Strange Things occur in the 200ms grace period. This function checks we're still synced
+	if (!document.keyIsDown) {
+		if (document.lastSubjectSearch != $("#subjectsearch").val()) {
+			dbug("checksync updating subject search");
+			updateSubjects();
+		} 
+		if (document.lastBodySearch != $("#bodysearch").val()) {
+			dbug("checksync updating body search");
+			updateBodies();
+		} 
+
 	}
-	query = $("#maininput").val();
-	jsonWrap("ajax/", {query: query}, takeAnswer);
+	setTimeout("checkSync()", 1000);
+}
+
+function updateSearch(type) {
+	if (type == "body") {
+		updateBodies();
+	} else {
+		updateSubjects();
+	}
+}
+
+function updateSubjects() {
+	query = $("#subjectsearch").val();
+	filteredSubs = document.subjects.filter(mfilter, query);
+	buildMsgs("subject", filteredSubs);
+	document.lastSubjectSearch = query;
+}
+
+function updateBodies() {
+	query = $("#bodysearch").val();
+	filteredBods = document.bodies.filter(mfilter, query);
+	buildMsgs("body", filteredBods);
+	document.lastBodySearch = query;
+}
+
+function buildMsgs(target, msgs) {
+	targetDiv = $("#" + target + "results");
+	targetDiv.empty();
+	newHTML = "";
+	for (id in msgs) {
+		msg = msgs[id];
+		newHTML += "<div class='result' id='" + target + msg.id + "'>" + msg.english + "</div>";
+	}
+	targetDiv.html(newHTML);
+	bindDynamics();
+}
+
+function updateReviewSubs() {
+	for (id in document.locaData) {
+		newSub = document.subjects[document.subSelected][document.locaData[id].language];
+		if (document.timeStampIt) {
+			newSub = "[" + document.timeStamps[id]['long'] + "] " + newSub;
+		}
+		$("#" + id + "subject").html(newSub);
+	}
+}
+
+function updateReviewBods() {
+	for (id in document.locaData) {
+		newBod = document.bodies[document.bodSelected][document.locaData[id].language];
+		if (document.timeStampIt) {
+			newBod = "[" +  document.timeStamps[id]['short'] + "] " + newBod;
+		}
+		$("#" + id + "body").html(newBod);
+	}
+}
+
+function selectmsg(msgid) {
+	ele = $("#" + msgid);
+	mType = msgid.replace(/(\d+)/, "");
+	lastMsg = (mType == "body") ? document.lastBody : document.lastSubject;
+	id = msgid.replace(/body|subject/, "");
+	if (lastMsg) {
+		lastMsg.toggleClass("selected"); // unselect old selected msg
+	}
+	ele.toggleClass("selected"); // select new message
+	scrollView(ele, ele.parent());
+	if (document.activeStep == 1) {
+		document.activeStep = 2;
+		$("#bodysearchdiv").toggleClass("hidden");
+	} else if ((document.activeStep == 2) && (mType == "body")) {
+		document.activeStep = 3;
+		$("#reviewpane").toggleClass("hidden");
+	}
+	if (mType == "body") {
+		document.lastBody = ele;
+		document.bodSelected = id;
+		updateReviewBods();
+	} else {
+		document.lastSubject = ele;
+		document.subSelected = id;
+		updateReviewSubs();
+	}
 }
 
 function newlines(text) {
@@ -202,140 +227,157 @@ function newlines(text) {
 	return result;
 }
 
-function takeAnswer(JSONobj) {
-	document.translation = []; // get rid of translations
-	$("#messages").empty(); // empty the messages div
-	document.lastSearch = JSONobj.query; // save query for reusage
-	tempCategories = []; // will save category names in here
-	for (rowid in JSONobj.reply) {
-		// each item in the JSONobj is a category with name, numMatches and messages
-		category = JSONobj.reply[rowid];
-		tempCategories.push(category.name);
-		resString = "results";
-		if (category.numMatches == 1) {
-			resString = "result";
-		}
-		// CONSTRUCTING RESULTS
-		catSafe = category.name.replace(/ /g, "-");
-		html = "<div class='row-fluid cat_toggle closedFold' id='" + catSafe + "'><div class='span1 toggleIcon' id='" + catSafe + "-icon'><i class='icon-plus'></i></div><div class='cat_toggle span11'> " + category.name + " (" + category.numMatches + " " + resString + " found)</div></div>"; // I wished you could toggle cats in real life
-		// create a row for the toggleable cat header. 1/11 split for +/- and cat name + numMatches
-		for (msgid in category.messages) {
-			row = category.messages[msgid];
-			document.translation[row.id] = [];
-			document.translation[row.id]['english'] = row.english;
-			document.translation[row.id]['german'] = row.german;
-			document.translation[row.id]['french'] = row.french;
-			document.translation[row.id]['spanish'] = row.spanish;
-			document.translation[row.id]['polish'] = row.polish;
-			document.translation[row.id]['korean'] = row.korean;
-			document.translation[row.id]['greek'] = row.greek;
-			document.translation[row.id]['romanian'] = row.romanian;
-			// save translations in global 
-			html +="<div class='msgrow msgnormal row-fluid result_"+ catSafe + "' id='row"+row.id+"'>";
-			html += "<div class='span12'>"+newlines(row.english)+"</div></div>";
-			// one row per message, split as above
-		}
-		
-		$("#messages").append(html);
-
-	}
-	document.allCategories = tempCategories; // write all cats to global
-	for (id in tempCategories) {
-		foldCat = tempCategories[id].replace(/ /g, "-"); // "short messages" -> "short-messages"
-		if (!(foldCat in document.folds)) {
-			document.folds[foldCat] = "invisible"; // if there is a category we've not seen previously, default it to collapsed
-		}
-	}
-	bindDynamics(); // bind message select and category collapse functionality to dynamically created elements
-	updateFolds();
-}
-
-function checkSync() {
-	if (!document.keyIsDown) {
-		if (document.lastSearch != $("#maininput").val()) {
-			dbug("checksync updating search");
-			updateSearch();
-		} 
-	}
-	setTimeout("checkSync()", 1000);
-
-}
-
-function inputKeyUp() {
+function inputKeyUp(type) {
 	e = document.keyUpEvent;
 	document.keyIsDown = false;
-	updateSearch();
-}
-
-function resizeBody() {
-
-	totalHeight = window.innerHeight - 100;
-	bigger = Math.floor(totalHeight * 0.6);
-	smaller = Math.floor(totalHeight * 0.4);
-	$("#step1").css("height", bigger + "px");
-	$("#step2").css("height", smaller + "px");
+	updateSearch(type);
 }
 
 function scrollView(ele, con) {
 	// element and the container with overflow: scroll; both need to be jquery elements
 	curTop = ele.position().top;
 	curScroll = con.scrollTop();
-	// we want to scroll to relative position 100. Thus: 100 - curTop = adjustment to be made to curScroll
-	adjustment = curTop - 100;
+	adjustment = curTop - 170;
 	newScroll = curScroll + adjustment;
 	con.scrollTop(newScroll);
-
 }
 
-function bindHovers() {
-	$("#pD-title").mouseover(function() { titleHover(); });
-	$("#pD-title").mouseout(function() { titleOut(); });
-	$("#pD-body").mouseover(function() { bodyHover(); });
-	$("#pD-body").mouseout(function() { bodyOut(); });
-	$("#pD-body").click(function() { useAsBody(); });
-	$("#pD-title").click(function() { useAsTitle(); });
-	$("#useAsTitle").click(function() { useAsTitle(); });
-	$("#useAsBody").click(function() { useAsBody(); });
+function publishClick(ele) {
+	if ($(".pcheck:checked").length > 0) {
+		$("#doitbutton").removeClass("disabled");
+	} else {
+		$("#doitbutton").addClass("disabled");
+	}
+	checkAllRegionsSelected();
+}
+
+function tstampCheckClick(ele) {
+	if (ele.is(":checked")) {
+		document.timeStampIt = true;
+	} else {
+		document.timeStampIt = false;
+	}
+	updateReviewSubs();
+	updateReviewBods();
+}
+
+function checkAllRegionsSelected() {
+	if ($(".pcheck:checked").length == Object.keys(document.locaData).length) {
+		// all are currently checked; set text of button to Deselect all and thereby prime the button to deselect
+		$("#selectall").val("Deselect all regions");
+		dbug("ALL CHECKED!");
+	} else {
+		// not all regions are currently checked; set text of button to Select all and thereby prime the button to select
+		$("#selectall").val("Select all regions");
+		dbug("NOT ALL CHECKED! checked length is " + $(".pcheck:checked").length + " and the other one is 10 right");
+	}
+	if ($(".pcheck:checked").length == 0) {
+		$("#doitbutton").addClass("disabled");	
+	}
+}
+
+function selectAllRegions() {
+	if ($("#
+	action = $("#selectall").val().substr(0,2);
+	if (action == "De") {
+		$(".pcheck:checked").click();
+	} else {
+		$(".pcheck:not(:checked)").click();
+	}
+	checkAllRegionsSelected();
+}
+
+function showPublishModal() {
+
+	modalRegs = $("#modalregions");
+	newHtml = "<ul>";
+	checkedBoxes = $(".pcheck:checked").toArray();
+	for (id in checkedBoxes) {
+		ele = checkedBoxes[id];
+		txt = "";
+		sc = ele.id.replace(/publish/, "");
+		dbug("sc is " + sc + " at id " + id);
+		lD = document.locaData[sc];
+		txt = lD.region + " (" + lD.language + ")";
+		newHtml += "<li>" + txt + "</li>";
+	}
+	newHtml += "</ul>";
+	modalRegs.html(newHtml);
+
+	$("#doitmodal").modal();
+}
+
+function doPublish() {
+	checkedBoxes = $(".pcheck:checked").toArray();
+	for (id in checkedBoxes) {
+		ele = checkedBoxes[id];
+		sc = ele.id.replace(/publish/, "");
+		language = document.locaData[sc]['language'];
+		forumurl = document.locaData[sc]['forumurl'];
+		title = document.subjects[document.subSelected][language];
+		body = document.bodies[document.bodSelected][language];
+		
+		console.log("Forum url is " + forumurl);
+		console.log("Title is " + title);
+		console.log("Body is " + body);
+	}
+	
 }
 
 function bindStatics() {
+
 	// event bindings for elements that persist through searches and similar
-	$("body").unload(dbug("unloading"));
-	$(window).resize(function () {
-		resizeBody();
+	$("#modalpublish").click(function (e) {
+		doPublish();
 	});
-	$("#pD-tstamptitle").change(function() {stampTitle()});
-	$("#pD-tstampbody").change(function() {stampBody()});
-	resizeBody();
-	$("#maininput").focus();
-	$("#maininput").keydown(function (e) {
+	$("#doitbutton").click(function (e) {
+		showPublishModal();
+	});
+	$("#selectall").click(function (e) {
+		selectAllRegions();
+	});
+	$(".tstamp").click(function (e) {
+		tstampCheckClick($(this));
+	});
+	$(".pcheck").click(function (e) {
+		publishClick($(this));
+	});
+	$("#subjectsearch").focus();
+	$("#subjectsearch").keydown(function (e) {
 		if (!document.keyIsDown) {
 			document.keyIsDown = true;
 		}
 		if (e.keyCode == 13 || e.keyCode == 27) {
-			dbug("blurring...");
 			$(this).blur();
-			updateSearch();
+			updateSubjects();
 			e.stopPropagation();
 			return;
 	} 
 	});
-	$("#maininput").keyup(function (e) {
-		if (document.searchTimeout) {
-			clearTimeout(document.searchTimeout);
-		}
-		document.keyUpEvent = e;
-		document.searchTimeout = setTimeout("inputKeyUp()", 200);
+	$("#subjectsearch").keyup(function (e) {
+		inputKeyUp('subject');
 	});
-	$("#pLang").change(function () { changePostLanguage(); });
+	$("#bodysearch").keydown(function (e) {
+		if (!document.keyIsDown) {
+			document.keyIsDown = true;
+		}
+		if (e.keyCode == 13 || e.keyCode == 27) {
+			$(this).blur();
+			updateBodies();
+			e.stopPropagation();
+			return;
+		} 
+	});
+	$("#bodysearch").keyup(function (e) {
+		inputKeyUp('body');
+	});
 	
 }
 
 function bindDynamics() {
 	// event bindings for elements that are destroyed and recreated on searches
-	$(".msgrow").click(function (e) {
-		rowid = $(this).attr("id").replace(/row/, "");
-		selectmsg(rowid);
+	$(".result").click(function (e) {
+		selectmsg(this.id);
 		e.stopPropagation();
 		
 	});
@@ -369,48 +411,6 @@ function flipClasses(elementId, class1, class2) {
 	}
 }
 
-function updateFolds() {
-	for (cat in document.folds) {
-	
-		if (document.folds[cat] == "visible") {
-			// This fold is open; the items are showing, the click icon is a minus, the select row itself is sunk into the page
-			$("#"+cat+"-icon").html("<i class='icon-minus'></i>");
-			flipClasses(cat, "openFold", "closedFold");
-			$(".result_" + cat).css("display", "");
-		
-		} else {
-			$("#"+cat+"-icon").html("<i class='icon-plus'></i>");
-			flipClasses(cat, "openFold", "closedFold");
-			$(".result_" + cat).css("display", "none");
-		}
-	
-	}
-}
-
-function toggleVis(cat) {
-	if (!document.folds[cat]) {
-		return;
-	}
-	if (document.folds[cat] == "visible") {
-		document.folds[cat] = "invisible";
-	} else {
-		document.folds[cat] = "visible";
-	}
-	updateFolds();
-}
-
-function selectmsg(msgid) {
-	if (document.activeStep == 1) {
-	ele = $("#row" + msgid);
-	flipClasses("row"+document.msgSelected, "selected", "msgnormal"); // unselect old selected msg
-	flipClasses(ele, "selected", "msgnormal"); // select new message
-	scrollView(ele, $("#step1"));
-	document.msgSelected = msgid;
-	trans = document.translation[msgid];
-	for (id in document.lD) {
-		$("#staging" + id).html(newlines(trans[document.lD[id].language]));
-	}
-}
 
 function popStep(curSec, step) {
 	ele = $(".step" + step);

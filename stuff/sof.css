@@ -1,3 +1,36 @@
+.searchheader {
+	font-size: 16pt;
+	font-weight: bold;
+	margin-top: 15px;
+	white-space: nowrap;
+}
+
+#subjectsearch, #bodysearch {
+	border-width: 3px;
+	min-width: 80%;
+}
+
+#subjectresults {
+	width: 100%;
+	height: 250px;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	border: 3px solid #ccc;
+	border-radius: 3px;
+	padding: 3px 3px 0px 3px;
+}
+
+#bodyresults {
+	width: 100%;
+	height: 250px;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	border: 3px solid #ccc;
+	border-radius: 3px;
+	padding: 3px 3px 0px 3px;
+
+}
+
 #ajaxstatus {
 	
 	right: 5px;
@@ -9,13 +42,48 @@
 .fw {
 font-family: courier;
 }
-.guidestepinactive {
-background-color: #999;
-}
 
 .cat_toggle {
 cursor: pointer;
 }
+
+.navbarpic {
+padding-top: 2px;
+padding-bottom: 0px;
+margin-top: 0px;
+margin-bottom: 0px;
+padding-left: 17px;
+padding-right: 50px;
+}
+
+.sofheader {
+    font-size: 29pt;
+    margin-top: 22px;
+    color: whitesmoke;
+    letter-spacing: 4px;
+    margin-left: 191px;
+    font-weight: bold;
+}
+
+#logins {
+	text-align: right;
+	padding-right: 40px;
+
+}
+
+.sofsubhead {
+
+    margin-left: 207px;
+    font-size: 16pt;
+    margin-top: 15px;
+    letter-spacing: 2px;
+
+}
+
+.sofcontainer {
+margin-top: 60px;
+}
+
 
 .toggleIcon {
 text-align: center;
@@ -30,57 +98,12 @@ width: 90%;
 margin: 5px 0px 5px 0px;
 }
 
-.selected {
-border: 2px solid rgba(255, 0, 0, 1);
-box-shadow: 0 0 3px 1px rgba(255, 0, 0, 0.5);
-background-color: rgba(255, 255, 150, 0.5);
-font-size: 12pt;
-font-weight: bold;
-padding-top: 5px;
-}
-
-#along {
-position: absolute;
-top: 60px;
-left: 262px;
-z-index:2400;
-}
-
-#ashort {
-position: absolute;
-top: 18px;
-left: 246px;
-z-index:2400;
+.selected  {
+background-color: #beb ! important;
 }
 
 #bgcanv {
 position: absolute;
-}
-
-.msgnormal {
-border: 1px solid rgba(0, 0, 0, 0.25);
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
-}
-
-.msgnormal:hover {
-border: 1px solid rgba(0, 0, 0, 1);
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
-box-shadow: 0 0 5px rgba(0, 0, 255, 1);
-cursor: pointer;
-}
-
-
-.msgrow {
-width: 89%;
-margin-bottom: 10px;
-margin-left: 5px;
-margin-right: 5px;
-padding-left: 10px;
-padding-top: 7px;
 }
 
 .s2lang {
@@ -92,57 +115,8 @@ text-align: center;
 text-align: center;
 }
 
-.openFold {
-border: 1px solid rgba(0, 0, 0, 0.05);
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
-  -webkit-box-shadow: outset 0 2px 2px rgba(0, 0, 0, 0.05);
-     -moz-box-shadow: outset 0 2px 2px rgba(0, 0, 0, 0.05);
-          box-shadow: outset 0 2px 2px rgba(0, 0, 0, 0.05);
-}
-
-.closedFold {
-border: 1px solid rgba(0, 0, 0, 0.05);
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-}
-
-#step1 {
-height: 600px;
-overflow-y: scroll;
-overflow-x: hidden;
-}
-
-#step2 {
-height: 400px;
-overflow-y: auto;
-overflow-x: hidden;
-border-top: 5px solid grey;
-padding-bottom: 50px;
-}
-
 body {
 overflow: hidden;
-}
-
-#pD-title:hover, #pD-body:hover {
-box-shadow: 0px 0px 5px 3px rgba(255, 0, 0, 1);
-cursor: pointer;
-}
-
-#pD-title {
-height: 45px;
-white-space: normal;
-}
-
-#pD-body {
-height: 200px;
-white-space: normal;
 }
 
 .container-fluid {
@@ -155,7 +129,56 @@ margin-bottom: 5px;
 
 }
 
-.pDinput {
-width: 390px;
-display; block;
+.result {
+border-bottom: 2px solid #bbb;
+font-size: 12pt;
+padding: 4px 5px 4px 5px;
+cursor: pointer;
+-webkit-touch-callout: none;
+-webkit-user-select: none;
+-khtml-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+}
+
+.result:hover, .result:nth-child(even):hover {
+background-color: #dfd;
+}
+
+.result:nth-child(even) {
+background-color: #eee;
+}
+
+#previewscroll {
+height: 350px;
+overflow-y: scroll;
+border: 3px solid #ccc;
+border-radius: 3px;
+}
+
+.previewrow {
+padding-top: 5px;
+}
+
+.previewrow:nth-child(odd) {
+background-color: #ddd;
+}
+
+.reviewheader {
+font-weight: bold;
+padding-left: 10px;
+}
+
+.regionheader {
+font-weight: bold;
+}
+
+.regioncell {
+padding-left: 10px;
+padding-top: 5px;
+}
+
+#doitpane {
+margin-top: 28px;
 }

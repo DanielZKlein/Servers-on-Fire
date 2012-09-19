@@ -6,135 +6,184 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Le styles -->
-    <link href="stuff/bootstrap.css" rel="stylesheet">
-    <link href="stuff/bootstrap-responsive.css" rel="stylesheet">
-    <link href="stuff/sof.css" rel="stylesheet">
+    <link href="{{url}}stuff/bootstrap.css" rel="stylesheet">
+    <link href="{{url}}stuff/bootstrap-responsive.css" rel="stylesheet">
+    <link href="{{url}}stuff/sof.css" rel="stylesheet">
 
+	
     <!-- Le fav and touch icons -->
   </head>
 
   <body>
-<img class="hide" id="ashort" src="stuff/arrowshort2.png" />
-<img class="hide" id="along" src="stuff/arrowlong2.png" />
   <div id="ajaxstatus">synced</div>
 
   <div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
-		<div class="container">
-			<a class="brand pull-left" style="position: relative; left: -250px;" href="#">Servers on Fire</a>
-			<form class="navbar-search" action="">
-				<input id="maininput" type="text" class="search-query span4" placeholder="Search">
-            </form>
+		<div class="container" style="width: 100%; height: 85px; background-color: black;">
+			<div class="row-fluid">
+				<div class="span1">
+					<img class="pull-left navbarpic" src="{{url}}stuff/riotlogo81.png" />
+				</div>
+				<div class="span7">
+					<div class="sofheader">Servers on Fire</div>
+					<div class="sofsubhead">Emergency Messaging Tool</div>
+				</div>
+				<div id="logins" class="span4 pull-right">
+					<p id="loginsheader">Login to all required shards</p>
+					<p id="loginstatus">NA: <span class="notloggedin">not logged in</span> | EUW: <span class="loggedin">logged in</span> | EUNE: <span class="notloggedin">not logged in</span> </p>
+					<p id="loginbuttonp"><input type="button" value="Login" id="loginbutton" /></p>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
 
 
-    <div class="container-fluid">
+<div class="container-fluid" style="margin-top: 85px;">
+	<div class="row-fluid">
+		<div class="span3">
+			<p class="searchheader">Select or search for a subject</p>
+			<input type="text" id="subjectsearch">
+			<div id="subjectresults">Subjects</div>
+			<div id="subjects"></div>
+		</div>
+		<div class="span9 hidden" id="bodysearchdiv">
+			<p class="searchheader">Select or search for a message body</p>
+			<input type="text" id="bodysearch">
+			<p id="bodyresults">Message bodies</p>
+			<div id="bodies"></div>
+		</div>
+	</div>
+	<div id="reviewpane" class="hidden">
 		<div class="row-fluid">
-			<div class="span3">
-				<form class="form-vertical">
-					<fieldset>
-						<legend>Assemble the message</legend>
-						<br>
-							Select language to show: 
-							<select id="pLang">
-							{% for shortcut, data in locaData.items %}
-							<option value="{{shortcut}}">{{data.region}}</option>
-							{% endfor %}
-							</select>
-							<div style="margin-bottom: 0px;" class="control-group">
-								<label class="control-label" for="pD-title">Thread title</label>
-								<div class="controls">
-									<span class="input-xlarge uneditable-input pDinput" id="pD-title"></span>
-								</div>
-							</div>
-							<div class="control-group">
-								<div class="control">
-									<label class="checkbox inline"><input type="checkbox" id="pD-tstamptitle">Time-stamp</label>
-									<input type="button" class="button pull-right" id="useAsTitle" value="Use selected message">
-									
-								</div>
-							</div>
-							<hr>
-							<div class="control-group">
-								<label class="control-label" for="pD-body">Thread body</label>
-								<div class="controls">
-									<span class="input-xlarge uneditable-input pDinput" id="pD-body" ></span>
-								</div>
-							</div>
-							<div class="control-group">
-								<div class="control">
-									<label class="checkbox inline"><input type="checkbox" id="pD-tstampbody">Time-stamp</label>
-									<input type="button" class="button pull-right deactivated" id="useAsBody" value="Use selected message">
-									
-								</div>
-							</div>
-							
-					</fieldset>
-				</form>
-
-
-			</div>
-			<div class="span9">
-				<div id="step1"> <!-- not part of the bootstrap scaffolding, but a wrap-around div that restricts the size of the scaffolding inside -->
-					<div id="messages">
-					</div>
-				</div>
-				<div id="step2"> 
-					<div id="actualstaging">
-						<table width=100% class="table-bordered table-striped table-condensed">
-							<colgroup>
-								<col width="11%" /><!-- language -->
-								<col width="60%" /><!-- messaging -->
-								<col width="21%" /><!-- localized time -->
-								<col width="8%" /><!-- post link -->
-								
-							</colgroup>
-							<tr><thead><th>Language/Region</th><th>Localized message</th><th>Localized time</th><th>Forum link</th></tr></thead>
-							{% for shortcut, data in locaData.items %}
-							<tr>
-								<td class="s2lang">{{data.region|capfirst}}</td>
-								<td id="staging{{shortcut}}"></td>
-								<td id="datetime{{shortcut}}"></td>
-								<td class="postlink"><a href="{{data.forumurl}}">Forums</a></td>
-							</tr>
-							{% endfor %}
-						</table>
-					</div>
-				</div>
+			<div class="span12">
+				<p class="searchheader">Review localized previews</p>
 			</div>
 		</div>
-	</div> <!-- /container -->
+		<div class="row-fluid">
+			<div class="span10">
+				<div class="row-fluid">
+					<div class="span2 reviewheader">Region/Time</div>
+					<div class="span8 reviewheader">Localized message to be posted in forum (subject in <b>bold</b>)</div>
+				</div>
+				<div id="previewscroll">
+					{% for shortcut, data in locaData.items %}
+					<div class="row-fluid previewrow">
+						<div class="span2 regioncell">
+							<p class="regionheader">{{data.region}}</p>
+							<p class="regiontime"><span id="{{shortcut}}time">xx:xx</span> ({{data.tz}})</p>
+							<p>
+							  <label class="checkbox"><input class="pcheck" data-shortcut="{{shortcut}}" id="{{shortcut}}publish" type="checkbox"> Publish in this language</label>
+							</p>
+						</div>
+						<div class="span8 messagecell">
+							<p id="{{shortcut}}subject"><b>{{shortcut}} subject</b></p>
+							<p id="{{shortcut}}body">{{shortcut}} body</p>
+						</div>
+					</div>
+					{% endfor %}
+			
+				</div>
+			</div>
+			<div class="span2" id="doitpane">
+				<p><input type="button" class="btn" id="selectall" value="Select all regions"></p>
+				<p><label class="checkbox"><input type="checkbox" class="tstamp" id="timestampit">Add timestamps</label></p>
+				<p><span id="pleaseselectone">Please select at least one region</span></p>
+				<p><input type="button" id="doitbutton" class="btn btn-primary disabled" value="Publish to selected forums"></p>
+			</div>
+		</div>
+	</div>	
+</div> <!-- /container -->
+
+<div class="modal hide" id="doitmodal">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">x</button>
+    <h3>Publish emergency messaging</h3>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to post in the following languages:</p>
+	<div id="modalregions">
+	
+	</div>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+    <a href="#" id="modalpublish" class="btn btn-primary">Publish</a>
+  </div>
+</div>
 	
 
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-	<script src="stuff/sof.js" type="text/javascript"></script>
+	<script src="{{url}}stuff/sof.js" type="text/javascript"></script>
 
-    <script src="stuff/jquery.js"></script>
-    <script src="stuff/bootstrap-transition.js"></script>
-    <script src="stuff/bootstrap-alert.js"></script>
-    <script src="stuff/bootstrap-modal.js"></script>
-    <script src="stuff/bootstrap-dropdown.js"></script>
-    <script src="stuff/bootstrap-scrollspy.js"></script>
-    <script src="stuff/bootstrap-tab.js"></script>
-    <script src="stuff/bootstrap-tooltip.js"></script>
-    <script src="stuff/bootstrap-popover.js"></script>
-    <script src="stuff/bootstrap-button.js"></script>
-    <script src="stuff/bootstrap-collapse.js"></script>
-    <script src="stuff/bootstrap-carousel.js"></script>
-    <script src="stuff/bootstrap-typeahead.js"></script>
+    <script src="{{url}}stuff/jquery.js"></script>
+    <script src="{{url}}stuff/bootstrap-transition.js"></script>
+    <script src="{{url}}stuff/bootstrap-alert.js"></script>
+    <script src="{{url}}stuff/bootstrap-modal.js"></script>
+    <script src="{{url}}stuff/bootstrap-dropdown.js"></script>
+    <script src="{{url}}stuff/bootstrap-scrollspy.js"></script>
+    <script src="{{url}}stuff/bootstrap-tab.js"></script>
+    <script src="{{url}}stuff/bootstrap-tooltip.js"></script>
+    <script src="{{url}}stuff/bootstrap-popover.js"></script>
+    <script src="{{url}}stuff/bootstrap-button.js"></script>
+    <script src="{{url}}stuff/bootstrap-collapse.js"></script>
+    <script src="{{url}}stuff/bootstrap-carousel.js"></script>
+    <script src="{{url}}stuff/bootstrap-typeahead.js"></script>
+	<script>
+	// Load all messages and translations into javascript
+	document.subjects = [];
+	{% for subject in subjects %}
+	document.subjects[{{subject.id}}] = [];
+	document.subjects[{{subject.id}}]['english'] = "{{subject.english|linebreaksbr|escapejs}}";
+	document.subjects[{{subject.id}}]['german'] = "{{subject.german|linebreaksbr|escapejs}}";
+	document.subjects[{{subject.id}}]['french'] = "{{subject.french|linebreaksbr|escapejs}}";
+	document.subjects[{{subject.id}}]['spanish'] = "{{subject.spanish|linebreaksbr|escapejs}}";
+	document.subjects[{{subject.id}}]['polish'] = "{{subject.polish|linebreaksbr|escapejs}}";
+	document.subjects[{{subject.id}}]['romanian'] = "{{subject.romanian|linebreaksbr|escapejs}}";
+	document.subjects[{{subject.id}}]['greek'] = "{{subject.greek|linebreaksbr|escapejs}}";
+	document.subjects[{{subject.id}}]['korean'] = "{{subject.korean|linebreaksbr|escapejs}}";
+	document.subjects[{{subject.id}}]['id'] = "{{subject.id}}";
+
+	{% endfor %}
+
+	document.bodies = [];
+	{% for body in bodies %}
+	document.bodies[{{body.id}}] = [];
+	document.bodies[{{body.id}}]['english'] = "{{body.english|linebreaksbr|escapejs}}";
+	document.bodies[{{body.id}}]['german'] = "{{body.german|linebreaksbr|escapejs}}";
+	document.bodies[{{body.id}}]['french'] = "{{body.french|linebreaksbr|escapejs}}";
+	document.bodies[{{body.id}}]['spanish'] = "{{body.spanish|linebreaksbr|escapejs}}";
+	document.bodies[{{body.id}}]['polish'] = "{{body.polish|linebreaksbr|escapejs}}";
+	document.bodies[{{body.id}}]['romanian'] = "{{body.romanian|linebreaksbr|escapejs}}";
+	document.bodies[{{body.id}}]['greek'] = "{{body.greek|linebreaksbr|escapejs}}";
+	document.bodies[{{body.id}}]['korean'] = "{{body.korean|linebreaksbr|escapejs}}";
+	document.bodies[{{body.id}}]['id'] = "{{body.id}}";
+
+	{% endfor %}
+
+	document.locaData = [];
+	{% for shortcut, data in locaData.items %}
+	document.locaData['{{shortcut}}'] = [];
+	document.locaData['{{shortcut}}']['language'] = '{{data.language}}';
+	document.locaData['{{shortcut}}']['region'] = '{{data.region}}';
+	document.locaData['{{shortcut}}']['forumurl'] = '{{data.forumurl}}';
+	document.locaData['{{shortcut}}']['tz'] = '{{data.tz}}';
+	document.locaData['{{shortcut}}']['datefmt'] = '{{data.datefmt}}';
+	document.locaData['{{shortcut}}']['timefmt'] = '{{data.timefmt}}';
+	{% endfor %}
+	
+	</script>
 	<script type="text/javascript">
 		$(function() {
 			
 			// ready function
-			document.lastSearch = $("#maininput").val();
+			document.myURL = '{{url}}';
 			bindStatics();
 			checkSync();
-			updateSearch();
-			getLocaData();
+			updateBodies();
+			updateSubjects();
 			timeTick();
 
 		});

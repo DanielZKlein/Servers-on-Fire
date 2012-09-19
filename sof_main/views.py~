@@ -53,22 +53,13 @@ def changecat(request):
 	msg.save()
 	return ajax(request)
 		
-def newrow(request):
-	dbug("new row!")
-	cat = request.GET.get("category", "general")
-	newMessage = Message.objects.create()
-	newMessage.category = cat
-	newMessage.save()
-	ro = getMsgsForAjax() # newrow has no filters or query... for now
-	ro["newRow"] = newMessage.id
-	jDump = json.dumps(ro)
-	
-	return HttpResponse(jDump)
-
 def home(request):
 	
 	lD = locaData.copy()
-	sd = {'locaData': lD}
+	subjects = Message.objects.all().filter(category__contains = "subject")
+	
+	bodies = Message.objects.all().filter(category__contains = "body")
+	sd = {'locaData': lD, 'url': request.build_absolute_uri(), 'subjects': subjects, 'bodies': bodies}
 
 	return render_to_response("templates/main_view.html", sd)
 	
@@ -150,14 +141,14 @@ def getMsgsForAjax(query="", filter=""):
 		thisRow["messages"] = []
 		for msg in messages:
 			newRow = {}
-			newRow["english"] = msg.english)
-			newRow["french"] = msg.french)
-			newRow["spanish"] = msg.spanish)
-			newRow["german"] = msg.german)
-			newRow["polish"] = msg.polish)
-			newRow["romanian"] = msg.romanian)
-			newRow["korean"] = msg.korean)
-			newRow["greek"] = msg.greek)
+			newRow["english"] = msg.english
+			newRow["french"] = msg.french
+			newRow["spanish"] = msg.spanish
+			newRow["german"] = msg.german
+			newRow["polish"] = msg.polish
+			newRow["romanian"] = msg.romanian
+			newRow["korean"] = msg.korean
+			newRow["greek"] = msg.greek
 			newRow["id"] = msg.id
 			thisRow["messages"].append(newRow)
 		returnObject["reply"].append(thisRow)
