@@ -3,7 +3,6 @@ from django.db import models
 from django.contrib import admin
 admin.autodiscover()
 
-
 class Message(models.Model):
 	english = models.TextField(blank = True)
 	french = models.TextField(blank = True)
@@ -14,8 +13,19 @@ class Message(models.Model):
 	romanian = models.TextField(blank = True)
 	greek = models.TextField(blank = True)
 	
-
-	category = models.CharField(default = "general", max_length = 20)
-
 	def __unicode__(self):
 		return self.english
+
+class Category(models.Model):
+	name = models.ForeignKey('Message', related_name='catname')
+	
+	def __unicode__(self):
+		return self.name.english
+	
+class Issue(models.Model):
+	name = models.ForeignKey('Message', related_name='issuename')
+	long = models.ForeignKey('Message', related_name='long')
+	short = models.ForeignKey('Message', related_name='short')
+	category = models.ForeignKey('Category')
+	
+	

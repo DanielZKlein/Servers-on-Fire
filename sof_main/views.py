@@ -4,7 +4,7 @@ from django.utils.encoding import force_unicode
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.utils.html import linebreaks
-from sof_main.models import Message
+from sof_main.models import *
 from datetime import datetime
 import pprint
 from django.utils import simplejson as json
@@ -182,32 +182,8 @@ def gettime(request):
 	jr = json.dumps(ro)
 	return HttpResponse(jr)
 	
-	
-	
-	
-	
-		
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+def dumpall(request):
+	sd = {'issues': Issue.objects.all()}
+	return render_to_response("templates/dump_all.html", sd)
 	
 	

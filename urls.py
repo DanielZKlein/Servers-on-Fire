@@ -15,6 +15,7 @@ urlpatterns = patterns('',
 	url(r'^addnewrow/$', 'serversonfire.sof_main.views.newrow'),
 	url(r'^delete/$', 'serversonfire.sof_main.views.deleterow'),
 	url(r'^changecat/$', 'serversonfire.sof_main.views.changecat'),
+	url(r'^dumpall/$', 'serversonfire.sof_main.views.dumpall'),
 )
 
 urlpatterns = urlpatterns + patterns('',
