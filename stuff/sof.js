@@ -1,18 +1,14 @@
-// CURRENT TODO: go to views.py and filter out newlines
+// CURRENT TODO: tear out the search box / filter functionality, make a click on cat filter issues
 
 document.keyIsDown = false;
-document.lastSubjectSearch = "";
-document.lastBodySearch = "";
-document.lastSubject = false; // jQuery object of the div corresponding to the selected message
-document.lastBody = false;
+document.lastCategorySearch = "";
+document.lastIssueSearch = "";
+document.lastIssue = false;
 document.timeStampIt = false;
-document.subSelected = -1; // id of subject selected
-document.bodSelected = -1;
+document.issueSelected = -1; // id of subject selected
 document.activeStep = 1; 
 document.myURL = "";
 document.timeStamps = [];
-
-
 
 function popThis(element, array) {
 	returnArr = array.slice(0); // make a copy of the array
@@ -24,25 +20,7 @@ function popThis(element, array) {
 	return returnArr;
 }
 
-function selectElementText(el, win) {
-
-    win = win || window;
-    var doc = win.document, sel, range;
-    if (win.getSelection && doc.createRange) {
-        sel = win.getSelection();
-        range = doc.createRange();
-        range.selectNodeContents(el);
-        sel.removeAllRanges();
-        sel.addRange(range);
-    } else if (doc.body.createTextRange) {
-        range = doc.body.createTextRange();
-        range.moveToElementText(el);
-        range.select();
-    }
-}
-
 function doubleDigit(me) {
-
 	me = me.toString();
 	if (me.length == 1) {
 		me = "0" + me;
@@ -51,7 +29,6 @@ function doubleDigit(me) {
 }
 
 function dbug(stuff) {
-
 	try {
 		time = new Date();
 		hours = doubleDigit(time.getHours());
@@ -62,9 +39,7 @@ function dbug(stuff) {
 		console.log(tstamp + stuff);
 
 	} catch(e) {
-		
 	}
-
 }
 
 function timeTick() {
@@ -92,14 +67,13 @@ function telltime(answer) {
 		$("#" + id + "time").text(region[1]);
 	}
 	if (document.activeStep == 3) {
-		updateReviewSubs();
-		updateReviewBods();
+		updateReviewSubjects();
+		updateReviewBodies();
 	}
-
 }
 
 function jsonWrap(url, dict, cb) {
-
+	// AJAXes things, while also updating the spiffy status div so we know what's going on with the AJAXing of things.
 	url = document.myURL + url;
 	$("#ajaxstatus").text("Sending...");
 	$.getJSON(url, dict, function(data) {
@@ -108,50 +82,58 @@ function jsonWrap(url, dict, cb) {
 		$("#ajaxstatus").text("synced");
 	});
 	$("#ajaxstatus").text("Waiting for sync...");
-
-}
-
-function mfilter(message) {
-	// array filter fun! array.filter(cb, thisobject); I'm passing query, which I'm looking for in the string
-	return (message.english.indexOf(this) > -1);
 }
 
 function checkSync() {
 	// in very rare situations, search bars can go out of sync; for instance if the page loses focus before a keyup can fire, or if Strange Things occur in the 200ms grace period. This function checks we're still synced
 	if (!document.keyIsDown) {
-		if (document.lastSubjectSearch != $("#subjectsearch").val()) {
-			dbug("checksync updating subject search");
+		if (document.lastCategorySearch != $("#catsearch").val()) {
+			dbug("checksync updating category search");
 			updateSubjects();
 		} 
-		if (document.lastBodySearch != $("#bodysearch").val()) {
-			dbug("checksync updating body search");
+		if (document.lastIssueSearch != $("#issuesearch").val()) {
+			dbug("checksync updating issue search");
 			updateBodies();
 		} 
-
 	}
 	setTimeout("checkSync()", 1000);
 }
 
 function updateSearch(type) {
-	if (type == "body") {
-		updateBodies();
+	if (type == "issue") {
+		updateIssues();
 	} else {
-		updateSubjects();
+		updateCategories();
 	}
 }
 
-function updateSubjects() {
-	query = $("#subjectsearch").val();
-	filteredSubs = document.subjects.filter(mfilter, query);
-	buildMsgs("subject", filteredSubs);
-	document.lastSubjectSearch = query;
+function mfilter(message) {
+	// array filter fun! array.filter(cb, thisobject); I'm passing query, which I'm looking for in the string
+	// back when I wrote this comment it made sense
+	return (message.name.english.indexOf(this) > -1);
 }
 
-function updateBodies() {
-	query = $("#bodysearch").val();
-	filteredBods = document.bodies.filter(mfilter, query);
-	buildMsgs("body", filteredBods);
-	document.lastBodySearch = query;
+function updateCategories() {
+	query = $("#catsearch").val();
+	temparr = [];
+	for (key in document.categories) {
+		temparr[key] = document.categories[key];
+	} // temporarily turn the object into an array so we can run array.filter
+	
+	filteredCats = temparr.filter(mfilter, query);
+	buildMsgs("cat", filteredCats);
+	document.lastCategorySearch = query;
+}
+
+function updateIssues() {
+	query = $("#issuesearch").val();
+	tempissues = [];
+	for (key in document.issues) {
+		tempissues[key] = document.issues[key];
+	} // temporarily turn object into array for filtering
+	filteredIssues = tempissues.filter(mfilter, query);
+	buildMsgs("issue", filteredIssues);
+	document.lastIssueSearch = query;
 }
 
 function buildMsgs(target, msgs) {
@@ -160,58 +142,49 @@ function buildMsgs(target, msgs) {
 	newHTML = "";
 	for (id in msgs) {
 		msg = msgs[id];
-		newHTML += "<div class='result' id='" + target + msg.id + "'>" + msg.english + "</div>";
+		newHTML += "<div class='result' id='" + target + id + "'>" + msg.name.english + "</div>";
 	}
 	targetDiv.html(newHTML);
 	bindDynamics();
 }
 
-function updateReviewSubs() {
+function updateReviewSubjects() {
 	for (id in document.locaData) {
-		newSub = document.subjects[document.subSelected][document.locaData[id].language];
-		if (document.timeStampIt) {
-			newSub = "[" + document.timeStamps[id]['long'] + "] " + newSub;
-		}
+		dbug(document.issueSelected);
+		newSub = document.issues[document.issueSelected].name[document.locaData[id].language];
+		newSub = "[" + document.timeStamps[id]['long'] + "] " + newSub;
 		$("#" + id + "subject").html(newSub);
 	}
 }
 
-function updateReviewBods() {
+function updateReviewBodies() {
 	for (id in document.locaData) {
-		newBod = document.bodies[document.bodSelected][document.locaData[id].language];
-		if (document.timeStampIt) {
-			newBod = "[" +  document.timeStamps[id]['short'] + "] " + newBod;
-		}
-		$("#" + id + "body").html(newBod);
+		newBody = document.issues[document.issueSelected].long[document.locaData[id].language];
+		$("#" + id + "body").html(newBody);
 	}
 }
 
 function selectmsg(msgid) {
 	ele = $("#" + msgid);
 	mType = msgid.replace(/(\d+)/, "");
-	lastMsg = (mType == "body") ? document.lastBody : document.lastSubject;
-	id = msgid.replace(/body|subject/, "");
+	lastMsg = (mType == "issue") ? document.lastIssue : document.lastCategory;
+	id = msgid.replace(/issue|cat/, "");
 	if (lastMsg) {
 		lastMsg.toggleClass("selected"); // unselect old selected msg
 	}
 	ele.toggleClass("selected"); // select new message
-	scrollView(ele, ele.parent());
+	// scrollView(ele, ele.parent()); // Why are we scrolling? if they clicked it it was in view, right? 
 	if (document.activeStep == 1) {
 		document.activeStep = 2;
-		$("#bodysearchdiv").toggleClass("hidden");
-	} else if ((document.activeStep == 2) && (mType == "body")) {
+		$("#issuesearchdiv").toggleClass("hidden");
+	} else if ((document.activeStep == 2) && (mType == "issue")) {
 		document.activeStep = 3;
 		$("#reviewpane").toggleClass("hidden");
 	}
-	if (mType == "body") {
-		document.lastBody = ele;
-		document.bodSelected = id;
-		updateReviewBods();
-	} else {
-		document.lastSubject = ele;
-		document.subSelected = id;
-		updateReviewSubs();
-	}
+	document.lastIssue = ele;
+	document.issueSelected = id;
+	updateReviewBodies();
+	updateReviewSubjects();
 }
 
 function newlines(text) {
@@ -257,8 +230,8 @@ function tstampCheckClick(ele) {
 	} else {
 		document.timeStampIt = false;
 	}
-	updateReviewSubs();
-	updateReviewBods();
+	updateReviewSubjects();
+	updateReviewBodies();
 }
 
 function checkAllRegionsSelected() {
@@ -319,8 +292,8 @@ function doPublish() {
 		sc = ele.id.replace(/publish/, "");
 		language = document.locaData[sc]['language'];
 		forumurl = document.locaData[sc]['forumurl'];
-		title = document.subjects[document.subSelected][language];
-		body = document.bodies[document.bodSelected][language];
+		title = document.issues[document.issueSelected]['name'][language];
+		body = document.issues[document.issueSelected]['long'][language];
 		
 		console.log("Forum url is " + forumurl);
 		console.log("Title is " + title);
@@ -330,7 +303,6 @@ function doPublish() {
 }
 
 function bindStatics() {
-
 	// event bindings for elements that persist through searches and similar
 	$("#modalpublish").click(function (e) {
 		doPublish();
@@ -347,8 +319,8 @@ function bindStatics() {
 	$(".pcheck").click(function (e) {
 		publishClick($(this));
 	});
-	$("#subjectsearch").focus();
-	$("#subjectsearch").keydown(function (e) {
+	$("#catsearch").focus();
+	$("#catsearch").keydown(function (e) {
 		if (!document.keyIsDown) {
 			document.keyIsDown = true;
 		}
@@ -384,18 +356,13 @@ function bindDynamics() {
 	$(".result").click(function (e) {
 		selectmsg(this.id);
 		e.stopPropagation();
-		
 	});
-	$(".cat_toggle").click(function() {
-		cat = $(this).attr("id");
-		toggleVis(cat);
-	});
-
 }
 
 function flipClasses(elementId, class1, class2) {
 	// given an element (or an elementId) and two class names, flip between the classes; if element has neither class, do nothing
 	// fool-proofed against Daniel
+	// Challenge accepted! -- Future Daniel
 	if (typeof(elementId) === "string") {
 		if (elementId.charAt(0) === "#") {
 			elementId = elementId.slice(1);
@@ -415,16 +382,3 @@ function flipClasses(elementId, class1, class2) {
 		element.removeClass(class2);
 	}
 }
-
-
-function popStep(curSec, step) {
-	ele = $(".step" + step);
-	newCol = "rgb(255, " + curSec + ", " + curSec + ")";
-	ele.css("background-color", newCol);
-	if (curSec < 255) {
-		curSec = curSec + 2 + Math.floor(curSec/10);
-		setTimeout("popStep("+curSec+", "+step+")", 50);
-	}
-}
-
-

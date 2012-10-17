@@ -5,12 +5,12 @@
 	white-space: nowrap;
 }
 
-#subjectsearch, #bodysearch {
+#catsearch, #issuesearch {
 	border-width: 3px;
 	min-width: 80%;
 }
 
-#subjectresults {
+#catresults {
 	width: 100%;
 	height: 250px;
 	overflow-x: hidden;
@@ -20,7 +20,7 @@
 	padding: 3px 3px 0px 3px;
 }
 
-#bodyresults {
+#issueresults {
 	width: 100%;
 	height: 250px;
 	overflow-x: hidden;
@@ -41,10 +41,6 @@
 }
 .fw {
 font-family: courier;
-}
-
-.cat_toggle {
-cursor: pointer;
 }
 
 .navbarpic {

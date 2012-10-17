@@ -4,6 +4,7 @@ from django.utils.encoding import force_unicode
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.utils.html import linebreaks
+from django.core import serializers
 from sof_main.models import *
 from datetime import datetime
 import pprint
@@ -23,7 +24,7 @@ locaData['de'] = {'language': 'german', 'region': 'Germany', 'forumurl': 'http:/
 locaData['ro'] = {'language': 'romanian', 'region': 'Romania', 'forumurl': 'http://eune.leagueoflegends.com/board/forumdisplay.php?f=143', 'tz': 'Europe/Bucharest', 'datefmt': '%d.%m.%y', 'timefmt': '%H:%M ora României'}
 locaData['pl'] = {'language': 'polish', 'region': 'Poland', 'forumurl': 'http://eune.leagueoflegends.com/board/forumdisplay.php?f=83', 'tz': 'Europe/Warsaw', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M czasu polskiego'}
 locaData['gr'] = {'language': 'greek', 'region': 'Greece', 'forumurl': 'http://eune.leagueoflegends.com/board/forumdisplay.php?f=166', 'tz': 'Europe/Athens', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M Ώρα Ελλάδας'}
-locaData['kr'] = {'language': 'korean', 'region': 'Korea', 'forumurl': '', 'tz': 'Asia/Seoul', 'datefmt': '%Y년 %m월 %d일', 'timefmt': '%H시 %M분 %Z'}
+#locaData['kr'] = {'language': 'korean', 'region': 'Korea', 'forumurl': '', 'tz': 'Asia/Seoul', 'datefmt': '%Y년 %m월 %d일', 'timefmt': '%H시 %M분 %Z'}
 
 def getld(request):
 	ro = json.dumps(locaData)
@@ -42,121 +43,41 @@ def dbug(text):
 	except:
 		pass
 
-def changecat(request):
-	newcat = request.GET.get("newcat", "general")
-	id = request.GET.get("id", False)
-	if not id:
-		return
-	id = re.sub(r'^.*_', "", id)
-	msg = Message.objects.get(pk = id)
-	msg.category = newcat
-	msg.save()
-	return ajax(request)
+def langDict(msg):
+	# given an instance of models.Message, return a dict like so: {'english': 'chair', 'german': 'stuhl', 'spanish': 'silla'} etc
+	langs = [x.name for x in Message._meta.fields[1:]] # skip the id field
+	rd = {}
+	for lang in langs:
+
+		rd[lang] = getattr(msg, lang).replace("\n", "").replace("'", "&apos;").replace('"', "&#34;")
+	return rd
+		
+def serializeIssues(issues):
+	rd = {}
+	for issue in issues:
+		rd[issue.id] = {}
+		rd[issue.id]['name'] = langDict(issue.name)
+		rd[issue.id]['short'] = langDict(issue.short)
+		rd[issue.id]['long'] = langDict(issue.long)
+		rd[issue.id]['category'] = langDict(issue.category.name)
+	return json.dumps(rd)
+		
+def serializeCats(cats):
+	rd = {}
+	for cat in cats:
+		rd[cat.id] = {}
+		rd[cat.id]['name'] = langDict(cat.name)
+	return json.dumps(rd)
 		
 def home(request):
 	
 	lD = locaData.copy()
-	subjects = Message.objects.all().filter(category__contains = "subject")
-	
-	bodies = Message.objects.all().filter(category__contains = "body")
-	sd = {'locaData': lD, 'url': request.build_absolute_uri(), 'subjects': subjects, 'bodies': bodies}
+	issues = serializeIssues(Issue.objects.all())
+	cats = serializeCats(Category.objects.all())
+	sd = {'locaData': lD, 'url': request.build_absolute_uri(), 'issues': issues, 'cats': cats}
 
 	return render_to_response("templates/main_view.html", sd)
 	
-def getMsgsWithCats(objs = Message.objects.all(), filter = "all", query = ""):
-	# Meaow
-	cursor = connection.cursor()
-	cursor.execute("SELECT DISTINCT category FROM sof_main_message")
-	cats = cursor.fetchall()
-	ro = {}
-	query = query.encode("ascii", "ignore")
-	terms = shlex.split(query)
-	for term in terms:
-		objs = objs.filter(english__icontains = term)
-
-	for cat in cats:
-		msgs = objs.filter(category = cat[0])
-		ro[cat[0]] = msgs
-
-	return ro
-	
-
-def takeedit(request):
-	id = request.GET["id"]
-	idres = re.match("(\w+)_(\d+)", id)
-	lang = idres.groups()[0]
-	m_id = idres.groups()[1]
-	mes = Message.objects.get(pk=m_id)
-	newtext = force_unicode(request.GET["newtext"])
-	if lang == "english":
-		dbug("english detected. Setting english to " + request.GET["newtext"])
-		mes.english = request.GET["newtext"]
-	elif lang == "german":
-		mes.german = request.GET["newtext"]
-	elif lang == "french":
-		mes.french = request.GET["newtext"]
-	elif lang == "spanish":
-		mes.spanish = request.GET["newtext"]
-	elif lang == "polish":
-		mes.polish = request.GET["newtext"]
-	mes.save()
-	return ajax(request)
-	
-def deleterow(request):
-	id = request.GET.get("id", "")
-	idres = re.match("(\w+)_(\d+)", id)
-	m_id = idres.groups()[1]	
-	if id:
-		Message.objects.filter(pk=m_id).delete()
-	return ajax(request)
-	
-def ajax(request):
-	if not request.is_ajax():
-		dbug("DENIED")
-		return False
-	dbug("AJAX received: ")
-	dbug(request.GET)
-	query = request.GET.get("query", "")
-	filter = request.GET.get("filter", "")
-	returnObject = getMsgsForAjax(query = query, filter = filter)
-	dbug("about to dump string")
-	jr = json.dumps(returnObject)
-	dbug("dumped")
-	return HttpResponse(jr)
-	
-def getMsgsForAjax(query="", filter=""):
-	dbug("getmsgs for a jax initiated")
-	returnObject = {"reply" : []}
-	query = query.encode("ascii", "ignore")
-	terms = shlex.split(query)
-	matches = Message.objects.all()
-	for term in terms:
-		matches = matches.filter(english__icontains = term)
-	matches = getMsgsWithCats(objs = matches)
-
-	for category, messages in matches.iteritems():
-		thisRow = {}
-		thisRow["name"] = category
-		thisRow["numMatches"] = len(messages)
-		thisRow["messages"] = []
-		for msg in messages:
-			newRow = {}
-			newRow["english"] = msg.english
-			newRow["french"] = msg.french
-			newRow["spanish"] = msg.spanish
-			newRow["german"] = msg.german
-			newRow["polish"] = msg.polish
-			newRow["romanian"] = msg.romanian
-			newRow["korean"] = msg.korean
-			newRow["greek"] = msg.greek
-			newRow["id"] = msg.id
-			thisRow["messages"].append(newRow)
-		returnObject["reply"].append(thisRow)
-
-	returnObject["query"] = query
-	dbug("returning from getmessages")
-	return returnObject
-
 def gettime(request):
 	linuxtime = request.GET.get("time", False) or request.POST.get("time", False)
 	if linuxtime:

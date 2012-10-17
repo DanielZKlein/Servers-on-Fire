@@ -42,16 +42,16 @@
 <div class="container-fluid" style="margin-top: 85px;">
 	<div class="row-fluid">
 		<div class="span3">
-			<p class="searchheader">Select or search for a subject</p>
-			<input type="text" id="subjectsearch">
-			<div id="subjectresults">Subjects</div>
-			<div id="subjects"></div>
+			<p class="searchheader">Category</p>
+			<input type="text" id="catsearch">
+			<div id="catresults">Categories</div>
+			<div id="cats"></div>
 		</div>
-		<div class="span9 hidden" id="bodysearchdiv">
-			<p class="searchheader">Select or search for a message body</p>
-			<input type="text" id="bodysearch">
-			<p id="bodyresults">Message bodies</p>
-			<div id="bodies"></div>
+		<div class="span9 hidden" id="issuesearchdiv">
+			<p class="searchheader">Issues</p>
+			<input type="text" id="issuesearch">
+			<p id="issueresults">Issues</p>
+			<div id="issues"></div>
 		</div>
 	</div>
 	<div id="reviewpane" class="hidden">
@@ -133,35 +133,10 @@
     <script src="{{url}}stuff/bootstrap-typeahead.js"></script>
 	<script>
 	// Load all messages and translations into javascript
-	document.subjects = [];
-	{% for subject in subjects %}
-	document.subjects[{{subject.id}}] = [];
-	document.subjects[{{subject.id}}]['english'] = "{{subject.english|linebreaksbr|escapejs}}";
-	document.subjects[{{subject.id}}]['german'] = "{{subject.german|linebreaksbr|escapejs}}";
-	document.subjects[{{subject.id}}]['french'] = "{{subject.french|linebreaksbr|escapejs}}";
-	document.subjects[{{subject.id}}]['spanish'] = "{{subject.spanish|linebreaksbr|escapejs}}";
-	document.subjects[{{subject.id}}]['polish'] = "{{subject.polish|linebreaksbr|escapejs}}";
-	document.subjects[{{subject.id}}]['romanian'] = "{{subject.romanian|linebreaksbr|escapejs}}";
-	document.subjects[{{subject.id}}]['greek'] = "{{subject.greek|linebreaksbr|escapejs}}";
-	document.subjects[{{subject.id}}]['korean'] = "{{subject.korean|linebreaksbr|escapejs}}";
-	document.subjects[{{subject.id}}]['id'] = "{{subject.id}}";
+	// for the time being we only need English for categories
+	document.categories = $.parseJSON('{{cats|safe}}');
 
-	{% endfor %}
-
-	document.bodies = [];
-	{% for body in bodies %}
-	document.bodies[{{body.id}}] = [];
-	document.bodies[{{body.id}}]['english'] = "{{body.english|linebreaksbr|escapejs}}";
-	document.bodies[{{body.id}}]['german'] = "{{body.german|linebreaksbr|escapejs}}";
-	document.bodies[{{body.id}}]['french'] = "{{body.french|linebreaksbr|escapejs}}";
-	document.bodies[{{body.id}}]['spanish'] = "{{body.spanish|linebreaksbr|escapejs}}";
-	document.bodies[{{body.id}}]['polish'] = "{{body.polish|linebreaksbr|escapejs}}";
-	document.bodies[{{body.id}}]['romanian'] = "{{body.romanian|linebreaksbr|escapejs}}";
-	document.bodies[{{body.id}}]['greek'] = "{{body.greek|linebreaksbr|escapejs}}";
-	document.bodies[{{body.id}}]['korean'] = "{{body.korean|linebreaksbr|escapejs}}";
-	document.bodies[{{body.id}}]['id'] = "{{body.id}}";
-
-	{% endfor %}
+	document.issues = $.parseJSON('{{issues|safe}}'); 
 
 	document.locaData = [];
 	{% for shortcut, data in locaData.items %}
@@ -182,8 +157,8 @@
 			document.myURL = '{{url}}';
 			bindStatics();
 			checkSync();
-			updateBodies();
-			updateSubjects();
+			updateIssues();
+			updateCategories();
 			timeTick();
 
 		});
