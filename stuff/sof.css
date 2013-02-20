@@ -1,8 +1,54 @@
+.shardlogin {
+border: 3px solid #ccc;
+border-radius: 3px;
+text-align: center;
+font-size: 14pt;
+margin-bottom: 15px;
+padding: 10px;
+cursor: pointer;
+}
+
+.lockspan {
+border: 1px solid grey;
+text-align: center;
+background-color: #FAA;
+padding: 5px;
+position: absolute;
+top: 25%;
+left: 25%;
+font-size: 16pt;
+width: 550px !important;
+color: black !important;
+display: block;
+}
+
+.notloggedin {
+border-color: #F99;
+background-color: #FDD;
+}
+
+.loggedin {
+border-color: #9F9;
+background-color: #DFD;
+cursor: default;
+}
+
+.notloggedin:hover {
+border-color: #F00;
+}
+
+#loginloading {
+margin-left: auto;
+margin-right: auto;
+text-align:center;
+}
+
 .searchheader {
 	font-size: 16pt;
 	font-weight: bold;
 	margin-top: 15px;
 	white-space: nowrap;
+	text-align: left;
 }
 
 #catsearch, #issuesearch {
@@ -12,9 +58,9 @@
 
 #catresults {
 	width: 100%;
-	height: 250px;
+	height: 300px;
 	overflow-x: hidden;
-	overflow-y: scroll;
+	overflow-y: hidden;
 	border: 3px solid #ccc;
 	border-radius: 3px;
 	padding: 3px 3px 0px 3px;
@@ -22,9 +68,9 @@
 
 #issueresults {
 	width: 100%;
-	height: 250px;
+	height: 300px;
 	overflow-x: hidden;
-	overflow-y: scroll;
+	overflow-y: hidden;
 	border: 3px solid #ccc;
 	border-radius: 3px;
 	padding: 3px 3px 0px 3px;
@@ -78,6 +124,14 @@ padding-right: 50px;
 
 .sofcontainer {
 margin-top: 60px;
+}
+
+.regionSelected {
+background-color: #beb !important;
+}
+
+.regionSelected:nth-child(even) {
+background-color: #cfc !important;
 }
 
 
@@ -154,16 +208,24 @@ border-radius: 3px;
 }
 
 .previewrow {
+font-size: 12pt;
 padding-top: 5px;
+cursor: pointer;
 }
 
 .previewrow:nth-child(odd) {
 background-color: #ddd;
 }
 
+.rowdisabled {
+color: #bbb;
+cursor: not-allowed;
+}
+
 .reviewheader {
 font-weight: bold;
 padding-left: 10px;
+font-size: 12pt;
 }
 
 .regionheader {
@@ -175,6 +237,16 @@ padding-left: 10px;
 padding-top: 5px;
 }
 
+#doitbutton.disabled {
+background-color: #bbb !important;
+}
+
+#doitbutton {
+font-size: 24pt;
+padding: 15px;
+}
+
 #doitpane {
 margin-top: 28px;
+text-align: center;
 }

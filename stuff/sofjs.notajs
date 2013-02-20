@@ -1,4 +1,4 @@
-// 
+// CURRENT TODO: grey out the shards you're not logged in for in the review view
 
 document.keyIsDown = false;
 document.lastIssue = false;
@@ -7,7 +7,6 @@ document.issueSelected = -1; // id of subject selected
 document.activeStep = 1; 
 document.myURL = "";
 document.timeStamps = [];
-document.forumRegionsSelected = [];
 
 function popThis(element, array) {
 	returnArr = array.slice(0); // make a copy of the array
@@ -65,7 +64,7 @@ function telltime(answer) {
 		document.timeStamps[id]['short'] = region[1];
 		$("#" + id + "time").text(region[1]);
 	}
-	if (document.activeStep == 4) {
+	if (document.activeStep == 3) {
 		updateReviewSubjects();
 		updateReviewBodies();
 	}
@@ -121,16 +120,19 @@ function buildMsgs(target, msgs) {
 	bindDynamics();
 }
 
-function updateReviews() {
+function updateReviewLocks() {
 	for (id in document.shards) {
 		if ($("#"+document.shards[id]).hasClass("loggedin")) {
-			$(".row" + document.shards[id]).show();
-			$(".row" + document.shards[id]).unbind("click");
-			$(".row" + document.shards[id]).click(function (e) {
-				selectForumRegion(this.id);
-			});
+			dbug("row" + document.shards[id]);
+			// remove the lock span
+			$("#lock" + document.shards[id]).hide();
+			// make the row clickable
+			$("#row" + document.shards[id]).toggleClass("rowdisabled");
+			
+			
 		}
 	}
+
 }
 
 function updateReviewSubjects() {
@@ -161,51 +163,24 @@ function selectmsg(msgid) {
 		document.catSelected = document.categories[id].name.english;
 		document.lastCategory = ele;
 		updateIssues();
-		$("#issuesearchdiv").show();
-		$("#reviewpane").hide();
 	} else {
 		document.lastIssue = ele;
 		document.issueSelected = id;
 		updateReviewSubjects();
 		updateReviewBodies();
-		$("#loginbox").show();
-		if ($(".shardlogin.loggedin").length > 0) {
-			$("#reviewpane").show();
-		}
-		if (hasPlaceholder(document.issues[id].long.english)) {
-			fillPlaceholder();
-		}
 
 	}
-}
-
-function getAllPlaceholders(msg) {
-	i = 0;
-	pos = 0;
-	console.log("wtf");
-	phregexp = /\b[A-Z]([A-Z]|_)+\b/g;
-	placeholders = [];
-	console.log("about to match");
-	matches = msg.match(phregexp);
-	console.log("other side");
-	console.log(matches);
-	if (!matches) {
-		console.log("huh");
-		return [];
+	if (document.activeStep == 1) {
+		document.activeStep = 2;
+		$("#issuesearchdiv").toggleClass("hidden");
+	} else if ((document.activeStep == 2) && (mType == "issue")) {
+		document.activeStep = 3;
+		$("#reviewpane").toggleClass("hidden");
+	} else if ((document.activeStep == 3) && (mType == "cat")) {
+		// taking a step back
+		document.activeStep = 2;
+		$("#reviewpane").toggleClass("hidden");
 	}
-	console.log("fuck both of you");
-	while ( (index = msg.substr(pos).search(phregexp)) > -1) {
-		placeholders.push([index, matches[i]]);
-		pos = index + matches[i].length;
-		i++;
-		console.log("pos is now " + pos + " meaning the new subst is " + msg.substr(pos));
-	}
-	return placeholders;
-
-}
-
-function fillPlaceholder() {
-
 }
 
 function newlines(text) {
@@ -230,18 +205,36 @@ function scrollView(ele, con) {
 	con.scrollTop(newScroll);
 }
 
-function selectForumRegion(ele) {
-	if ($("#" + ele).hasClass("regionSelected")) {
-		document.forumRegionsSelected = popThis(ele, document.forumRegionsSelected);
-	} else {
-		document.forumRegionsSelected.push(ele);		
-	}
-	$("#" + ele).toggleClass("regionSelected");
-	if (document.forumRegionsSelected.length > 0) {
+function publishClick(ele) {
+	if ($(".pcheck:checked").length > 0) {
 		$("#doitbutton").removeClass("disabled");
 	} else {
 		$("#doitbutton").addClass("disabled");
 	}
+	checkAllRegionsSelected();
+}
+
+function checkAllRegionsSelected() {
+	if ($(".pcheck:checked").length == Object.keys(document.locaData).length) {
+		// all are currently checked; set text of button to Deselect all and thereby prime the button to deselect
+		$("#selectall").val("Deselect all regions");
+	} else {
+		// not all regions are currently checked; set text of button to Select all and thereby prime the button to select
+		$("#selectall").val("Select all regions");
+	}
+	if ($(".pcheck:checked").length == 0) {
+		$("#doitbutton").addClass("disabled");	
+	}
+}
+
+function selectAllRegions() {
+	action = $("#selectall").val().substr(0,2);
+	if (action == "De") {
+		$(".pcheck:checked").click();
+	} else {
+		$(".pcheck:not(:checked)").click();
+	}
+	checkAllRegionsSelected();
 }
 
 function shardClick(shardid) {
@@ -257,7 +250,6 @@ function shardClick(shardid) {
 	$("#loginpassword").val("");
 	document.loginModalShardID = shardid;
 	$("#loginmodal").modal();
-	$("#loginusername").focus();
 }
 
 function doLogin() {
@@ -274,8 +266,7 @@ function takeLogin(data) {
 		flipClasses(document.loginModalShardID, "notloggedin", "loggedin");
 		$("#" + document.loginModalShardID).removeAttr('title');
 		$("#" + document.loginModalShardID).unbind('click');
-		updateReviews();
-		$("#reviewpane").show();
+		updateReviewLocks();
 	} else {
 		$("#" + data.msg).show();
 	}
@@ -291,10 +282,11 @@ function showPublishModal() {
 
 	modalRegs = $("#modalregions");
 	newHtml = "<ul>";
-	for (id in document.forumRegionsSelected) {
-		ele = document.forumRegionsSelected[id];
+	checkedBoxes = $(".pcheck:checked").toArray();
+	for (id in checkedBoxes) {
+		ele = checkedBoxes[id];
 		txt = "";
-		sc = ele.replace(/row/, "");
+		sc = ele.id.replace(/publish/, "");
 		dbug("sc is " + sc + " at id " + id);
 		lD = document.locaData[sc];
 		txt = lD.region + " (" + lD.language + ")";
@@ -304,10 +296,6 @@ function showPublishModal() {
 	modalRegs.html(newHtml);
 
 	$("#doitmodal").modal();
-}
-
-function hasPlaceholder(msg) {
-	return (msg.search(/\b[A-Z]([A-Z]|_)+\b/) > -1);
 }
 
 function doPublish() {
@@ -329,9 +317,6 @@ function doPublish() {
 
 function bindStatics() {
 	// event bindings for elements that persist through searches and similar
-	$("#issuesearchdiv").hide();
-	$("#loginbox").hide();
-	$(".previewrow").hide();
 	$("#modalpublish").click(function (e) {
 		doPublish();
 	});
@@ -351,7 +336,6 @@ function bindStatics() {
 	$(".pcheck").click(function (e) {
 		publishClick($(this));
 	});
-
 	document.shards = []
 	for (id in document.locaData) { 
 		thisshard = document.locaData[id].shard; 
@@ -359,7 +343,6 @@ function bindStatics() {
 			document.shards.push(thisshard);
 		} 
 	}
-
 }
 
 function bindDynamics() {

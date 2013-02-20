@@ -28,11 +28,6 @@
 					<div class="sofheader">Servers on Fire</div>
 					<div class="sofsubhead">Emergency Messaging Tool</div>
 				</div>
-				<div id="logins" class="span4 pull-right">
-					<p id="loginsheader">Login to all required shards</p>
-					<p id="loginstatus">NA: <span class="notloggedin">not logged in</span> | EUW: <span class="loggedin">logged in</span> | EUNE: <span class="notloggedin">not logged in</span> </p>
-					<p id="loginbuttonp"><input type="button" value="Login" id="loginbutton" /></p>
-				</div>
 			</div>
 		</div>
 	</div>
@@ -41,26 +36,34 @@
 
 <div class="container-fluid" style="margin-top: 85px;">
 	<div class="row-fluid">
+	<div class="span1"><!--spacer--></div>
 		<div class="span3">
 			<p class="searchheader">Category</p>
-			<input type="text" id="catsearch">
 			<div id="catresults">Categories</div>
 			<div id="cats"></div>
 		</div>
-		<div class="span9 hidden" id="issuesearchdiv">
+		<div class="span3" id="issuesearchdiv">
 			<p class="searchheader">Issues</p>
-			<input type="text" id="issuesearch">
 			<p id="issueresults">Issues</p>
 			<div id="issues"></div>
 		</div>
+		<div class="span4 hide" id="loginbox"><p class="searchheader">Login status</p>
+			<div class="shardlogin notloggedin" title="click to login" id="na">North America</div>
+			<div class="shardlogin notloggedin" title="click to login" id="euw">Europe West</div>
+			<div class="shardlogin notloggedin" title="click to login" id="eune">Europe Nordic and East</div>
+		</div>
+		<div class="span1"><!--spacer--></div>
 	</div>
-	<div id="reviewpane" class="hidden">
+	<div id="reviewpane" class="hide">
 		<div class="row-fluid">
-			<div class="span12">
-				<p class="searchheader">Review localized previews</p>
+		<div class="span1"><!--spacer--></div>
+			<div class="span10">
+				<p class="searchheader">Select regions to post to</p>
 			</div>
+		<div class="span1"><!--spacer--></div>
 		</div>
 		<div class="row-fluid">
+			<div class="span1"><!--spacer--></div>
 			<div class="span10">
 				<div class="row-fluid">
 					<div class="span2 reviewheader">Region/Time</div>
@@ -68,12 +71,12 @@
 				</div>
 				<div id="previewscroll">
 					{% for shortcut, data in locaData.items %}
-					<div class="row-fluid previewrow">
+					<div class="row-fluid previewrow row{{data.shard}}" id="{{shortcut}}row" style="position: relative;">
 						<div class="span2 regioncell">
 							<p class="regionheader">{{data.region}}</p>
 							<p class="regiontime"><span id="{{shortcut}}time">xx:xx</span> ({{data.tz}})</p>
 							<p>
-							  <label class="checkbox"><input class="pcheck" data-shortcut="{{shortcut}}" id="{{shortcut}}publish" type="checkbox"> Publish in this language</label>
+							  <!--<label class="checkbox"><input class="pcheck" data-shortcut="{{shortcut}}" id="{{shortcut}}publish" type="checkbox"> Publish in this language</label>-->
 							</p>
 						</div>
 						<div class="span8 messagecell">
@@ -85,15 +88,16 @@
 			
 				</div>
 			</div>
-			<div class="span2" id="doitpane">
-				<p><input type="button" class="btn" id="selectall" value="Select all regions"></p>
-				<p><label class="checkbox"><input type="checkbox" class="tstamp" id="timestampit">Add timestamps</label></p>
-				<p><span id="pleaseselectone">Please select at least one region</span></p>
-				<p><input type="button" id="doitbutton" class="btn btn-primary disabled" value="Publish to selected forums"></p>
+			<div class="span1"><!--spacer--></div>
+		</div>
+		<div class="row-fluid">
+			<div class="span12" id="doitpane">
+				<p><input type="button" id="doitbutton" class="btn btn-primary disabled" value="Publish"></p>
 			</div>
 		</div>
 	</div>	
 </div> <!-- /container -->
+
 
 <div class="modal hide" id="doitmodal">
   <div class="modal-header">
@@ -111,6 +115,45 @@
     <a href="#" id="modalpublish" class="btn btn-primary">Publish</a>
   </div>
 </div>
+
+<div class="modal hide" id="loginmodal">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">x</button>
+		<h3 id="loginmodalheader">Login to</h3>
+	</div>
+	<div class="modal-body">
+	<form class="form-horizontal">
+		<div class="control-group">
+			<label class="control-label" for="loginusername">USERNAME</label>
+			<div class="controls">
+				<input type="text" id="loginusername" placeholder="USERNAME">
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" for="loginpassword">PASSWORD</label>
+			<div class="controls">
+				<input type="text" id="loginpassword" placeholder="PASSWORD">
+			</div>
+		</div>
+		<div class="alert alert-error hide" id="wrongcredentials">
+			<button type="button" class="close" data-dismiss="alert">x</button>
+			Incorrect username or password.
+		</div>
+		<div class="alert alert-error hide" id="missingcredentials">
+			<button type="button" class="close" data-dismiss="alert">x</button>
+			Username or password not given.
+		</div>
+
+		<div class="control-group">
+			<div class="controls">
+				<button type="button" id="loginbutton" class="btn btn-primary">LOGIN</button>
+			</div>
+		</div>
+		<div class="control-group">
+		<div class="controls">
+		<img id="loginloading" class="hide" src="stuff/images/loading.gif">
+		</div></div>
+	</form>
 	
 
     <!-- Le javascript
@@ -141,6 +184,7 @@
 	document.locaData = [];
 	{% for shortcut, data in locaData.items %}
 	document.locaData['{{shortcut}}'] = [];
+	document.locaData['{{shortcut}}']['shard'] = '{{data.shard}}';
 	document.locaData['{{shortcut}}']['language'] = '{{data.language}}';
 	document.locaData['{{shortcut}}']['region'] = '{{data.region}}';
 	document.locaData['{{shortcut}}']['forumurl'] = '{{data.forumurl}}';
@@ -156,8 +200,6 @@
 			// ready function
 			document.myURL = '{{url}}';
 			bindStatics();
-			checkSync();
-			updateIssues();
 			updateCategories();
 			timeTick();
 

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.enrow td { background-color: #FFBBBB; }
+.derow td { background-color: #BBFFBB; }
+.frrow td { background-color: #BBBBFF; }
+.esrow td { background-color: #FFBBFF; }
+.grrow td { background-color: #BBFFFF; }
+.plrow td { background-color: #BBBBBB; }
+.rorow td { background-color: #FFFFBB; }
+</style>
+</head>
+<body>
+<table><tr><td>id</td><td>Language</td><td>Category</td><td>Issue</td><td>Long text</td><td>Short text</td></tr>
+{% for issue in issues %}
+<tr class="enrow"><td>{{issue.id}}</td><td>English</td><td>{{issue.category.name.english}}</td><td>{{issue.name.english}}</td><td>{{issue.long.english}}</td><td>{{issue.short.english}}</td></tr>
+<tr class="derow"><td>{{issue.id}}</td><td>German</td><td>{{issue.category.name.german}}</td><td>{{issue.name.german}}</td><td>{{issue.long.german}}</td><td>{{issue.short.german}}</td></tr>
+<tr class="frrow"><td>{{issue.id}}</td><td>French</td><td>{{issue.category.name.french}}</td><td>{{issue.name.french}}</td><td>{{issue.long.french}}</td><td>{{issue.short.french}}</td></tr>
+<tr class="esrow"><td>{{issue.id}}</td><td>Spanish</td><td>{{issue.category.name.spanish}}</td><td>{{issue.name.spanish}}</td><td>{{issue.long.spanish}}</td><td>{{issue.short.spanish}}</td></tr>
+<tr class="grrow"><td>{{issue.id}}</td><td>Greek</td><td>{{issue.category.name.greek}}</td><td>{{issue.name.greek}}</td><td>{{issue.long.greek}}</td><td>{{issue.short.greek}}</td></tr>
+<tr class="plrow"><td>{{issue.id}}</td><td>Polish</td><td>{{issue.category.name.polish}}</td><td>{{issue.name.polish}}</td><td>{{issue.long.polish}}</td><td>{{issue.short.polish}}</td></tr>
+<tr class="rorow"><td>{{issue.id}}</td><td>Romanian</td><td>{{issue.category.name.romanian}}</td><td>{{issue.name.romanian}}</td><td>{{issue.long.romanian}}</td><td>{{issue.short.romanian}}</td></tr>
+
+{% endfor %}
+</table>
+</body>
+</html>

@@ -15,15 +15,15 @@ from pytz import *
 from orderedDict import OrderedDict
 
 locaData = OrderedDict()
-locaData['na'] = {'language': 'english', 'region': 'North America', 'forumurl': 'http://na.leagueoflegends.com/board/forumdisplay.php?f=20', 'tz': 'US/Pacific', 'datefmt': '%m/%d/%y', 'timefmt': '%I:%M %p %Z'}
-locaData['euw'] = {'language': 'english', 'region': 'Europe West', 'forumurl': 'http://euw.leagueoflegends.com/board/forumdisplay.php?f=10', 'tz': 'Europe/London', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M UK time'}
-locaData['eune'] = {'language': 'english', 'region': 'Europe Nordic and East', 'forumurl': 'http://eune.leagueoflegends.com/board/forumdisplay.php?f=10', 'tz': 'Europe/Stockholm', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M %Z'}
-locaData['fr'] = {'language': 'french', 'region': 'France', 'forumurl': 'http://euw.leagueoflegends.com/board/forumdisplay.php?f=35', 'tz': 'Europe/Paris', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M heure française'}
-locaData['es'] = {'language': 'spanish', 'region': 'Spain', 'forumurl': 'http://euw.leagueoflegends.com/board/forumdisplay.php?f=21', 'tz': 'Europe/Madrid', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M hora peninsular'}
-locaData['de'] = {'language': 'german', 'region': 'Germany', 'forumurl': 'http://euw.leagueoflegends.com/board/forumdisplay.php?f=46', 'tz': 'Europe/Berlin', 'datefmt': '%d.%m.%y', 'timefmt': '%H:%M Uhr deutscher Zeit'}
-locaData['ro'] = {'language': 'romanian', 'region': 'Romania', 'forumurl': 'http://eune.leagueoflegends.com/board/forumdisplay.php?f=143', 'tz': 'Europe/Bucharest', 'datefmt': '%d.%m.%y', 'timefmt': '%H:%M ora României'}
-locaData['pl'] = {'language': 'polish', 'region': 'Poland', 'forumurl': 'http://eune.leagueoflegends.com/board/forumdisplay.php?f=83', 'tz': 'Europe/Warsaw', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M czasu polskiego'}
-locaData['gr'] = {'language': 'greek', 'region': 'Greece', 'forumurl': 'http://eune.leagueoflegends.com/board/forumdisplay.php?f=166', 'tz': 'Europe/Athens', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M Ώρα Ελλάδας'}
+locaData['na'] = {'shard': 'na', 'language': 'english', 'region': 'North America', 'forumurl': 'http://na.leagueoflegends.com/board/forumdisplay.php?f=20', 'tz': 'US/Pacific', 'datefmt': '%m/%d/%y', 'timefmt': '%I:%M %p %Z'}
+locaData['euw'] = {'shard': 'euw', 'language': 'english', 'region': 'Europe West', 'forumurl': 'http://euw.leagueoflegends.com/board/forumdisplay.php?f=10', 'tz': 'Europe/London', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M UK time'}
+locaData['fr'] = {'shard': 'euw', 'language': 'french', 'region': 'France', 'forumurl': 'http://euw.leagueoflegends.com/board/forumdisplay.php?f=35', 'tz': 'Europe/Paris', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M heure française'}
+locaData['es'] = {'shard': 'euw', 'language': 'spanish', 'region': 'Spain', 'forumurl': 'http://euw.leagueoflegends.com/board/forumdisplay.php?f=21', 'tz': 'Europe/Madrid', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M hora peninsular'}
+locaData['de'] = {'shard': 'euw', 'language': 'german', 'region': 'Germany', 'forumurl': 'http://euw.leagueoflegends.com/board/forumdisplay.php?f=46', 'tz': 'Europe/Berlin', 'datefmt': '%d.%m.%y', 'timefmt': '%H:%M Uhr deutscher Zeit'}
+locaData['eune'] = {'shard': 'eune', 'language': 'english', 'region': 'Europe Nordic and East', 'forumurl': 'http://eune.leagueoflegends.com/board/forumdisplay.php?f=10', 'tz': 'Europe/Stockholm', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M %Z'}
+locaData['ro'] = {'shard': 'eune', 'language': 'romanian', 'region': 'Romania', 'forumurl': 'http://eune.leagueoflegends.com/board/forumdisplay.php?f=143', 'tz': 'Europe/Bucharest', 'datefmt': '%d.%m.%y', 'timefmt': '%H:%M ora României'}
+locaData['pl'] = {'shard': 'eune', 'language': 'polish', 'region': 'Poland', 'forumurl': 'http://eune.leagueoflegends.com/board/forumdisplay.php?f=83', 'tz': 'Europe/Warsaw', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M czasu polskiego'}
+locaData['gr'] = {'shard': 'eune', 'language': 'greek', 'region': 'Greece', 'forumurl': 'http://eune.leagueoflegends.com/board/forumdisplay.php?f=166', 'tz': 'Europe/Athens', 'datefmt': '%d/%m/%y', 'timefmt': '%H:%M Ώρα Ελλάδας'}
 #locaData['kr'] = {'language': 'korean', 'region': 'Korea', 'forumurl': '', 'tz': 'Asia/Seoul', 'datefmt': '%Y년 %m월 %d일', 'timefmt': '%H시 %M분 %Z'}
 
 def getld(request):
@@ -78,6 +78,22 @@ def home(request):
 
 	return render_to_response("templates/main_view.html", sd)
 	
+def fakelogin(request):
+	username = request.GET.get("username", False)
+	password = request.GET.get("password", False)
+	dbug("username is " + username + " and password is " + password)
+	if not username or not password:
+		return HttpResponse(json.dumps({'status': 'failed', 'msg': 'missingcredentials'}))
+	shard = request.GET.get("shard", False)
+	if not shard:
+		return HttpResponse(json.dumps({'status': 'failed', 'msg': 'Shard not given'}))
+	correctusername = shard + "username"
+	correctpassword = shard + "password"
+	if username == correctusername and password == correctpassword:
+		return HttpResponse(json.dumps({'status': 'success', 'msg': ''}))
+	else:
+		return HttpResponse(json.dumps({'status': 'failed', 'msg': 'wrongcredentials'}))
+		
 def gettime(request):
 	linuxtime = request.GET.get("time", False) or request.POST.get("time", False)
 	if linuxtime:

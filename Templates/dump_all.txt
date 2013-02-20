@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.enrow td { background-color: #FFBBBB; }
+.derow td { background-color: #BBFFBB; }
+</style>
+</head>
+<body>
+<table><tr><td>id</td><td>Language</td><td>Category</td><td>Issue</td><td>Long text</td><td>Short text</td></tr>
+{% for issue in sd %}
+<tr class="enrow">
+{% endfor %}
+
+</body>
+</html>

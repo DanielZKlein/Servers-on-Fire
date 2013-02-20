@@ -1,0 +1,191 @@
+Category,Issue,Full text,Short text
+"
+
+En línea
+
+",En línea, ¡League of Legends está listo para servir!,¡League of Legends está listo para servir!
+En línea,Todas las incidencias se han resuelto,Todas las incidencias se han resuelto y League of Legends funciona a todo trapo. ¡Gracias por vuestra paciencia!,Todas las incidencias se han resuelto y League of Legends vuelve a estar disponible. ¡Gracias por vuestra paciencia!
+Incidencias de estadísticas,General,Algunos de vosotros habéis sufrido incidencias relacionadas con vuestras estadísticas de League of Legends. Somos conscientes del problema y trabajamos lo más deprisa posible para solucionarlo.,Estamos trabajando para arreglar una incidencia que podría estar afectando a vuestras estadísticas. 
+Incidencias de estadísticas,Sin estadísticas al terminar la partida,"Algunos de vosotros habéis tenido problemas para obtener las estadísticas tras una partida. Si experimentáis un retraso inusualmente largo antes de acceder a la pantalla de final de la partida, haced clic en “Saltarse las estadísticas y volver a jugar”. Vuestras estadísticas de juego deberían reflejarse en vuestro perfil de invocador.",Estamos trabajando para arreglar una incidencia por la que no recibíais vuestras estadísticas. Saltaos las estadísticas para evitar retrasos.
+Incidencias de estadísticas,Estadísticas perdidas,"Algunas de las estadísticas de vuestro perfil de invocador podrían mostrarse mal. Somos conscientes del problema y estamos trabajando para solucionarlo. Es un problema de presentación, no se pierde ninguna estadística de forma permanente.",Estamos trabajando para arreglar una incidencia por la que las estadísticas no se mostraban correctamente en los perfiles.
+Incidencias en la selección de campeón,No se puede acceder a la selección de campeón,Algunos de vosotros habéis sufrido incidencias al acceder a la selección de campeón. Somos conscientes del problema y trabajamos lo más rápido posible para solucionarlo. No hay penalizaciones si por culpa de esto no se puede acceder a la selección de campeón.,Estamos trabajando para solucionar una incidencia que impedía que accedieseis a la selección de campeón.
+Incidencias en la selección de campeón,No se puede seleccionar a un campeón,Algunos habéis sufrido incidencias al seleccionar a un campeón durante la selección de campeón. Somos conscientes del problema y trabajamos lo más deprisa posible para solucionarlo. ,Estamos trabajando para solucionar una incidencia que impedía que seleccionaseis a un campeón en la selección de campeón.
+Incidencias en la selección de campeón,Campeón deshabilitado,"CHAMPION_NAME está causando incidencias en el juego. Hemos deshabilitado de forma temporal a este campeón mientras trabajamos para solucionarlo. Lamentamos las molestias, jugadores de CHAMPION_NAME.","CHAMPION_NAME está causando problemas en el juego, así que lo hemos deshabilitado mientras solucionamos la incidencia."
+Incidencias en la selección de campeón,Campeón gratuito deshabilitado,"FREE_NAME está
+causando problemas en el juego. Hemos deshabilitado de forma temporal a este
+campeón mientras trabajamos para solucionarlo. Mientras tanto, SUB_CHAMPION pasa a ocupar su lugar en
+la rotación de campeones gratuitos.","FREE_NAME está causando problemas en el juego, así que, mientras solucionamos la incidencia, lo hemos reemplazado en la rotación gratuita por SUB_CHAMPION."
+Cola de inicio de sesión,Esperas largas en la cola,Es posible que algunos de vosotros estéis experimentando unos tiempos de espera muy largos en las colas de inicio de sesión. Somos conscientes del problema y trabajamos lo más deprisa posible para solucionarlo.,Estamos trabajando para arreglar los tiempos de espera en las colas de inicio de sesión.
+Cola de inicio de sesión,Servidores ocupados,"Estamos experimentando problemas de carga, por lo que es posible que a algunos de vosotros os salgan mensajes de servidor ocupado cuando intentáis iniciar sesión en el juego. Somos conscientes del problema y trabajamos lo más deprisa posible para solucionarlo.","Estamos experimentando problemas de carga, por lo que es posible que os salgan mensajes de servidor ocupado cuando intentáis iniciar sesión."
+"
+
+Retardos
+
+",Retardos,"Es posible que sufráis
+retardos en la partida. Somos conscientes del problema y trabajamos lo más
+deprisa posible para solucionarlo.",Estamos trabajando para arreglar una incidencia por la que podríais experimentar retardos en la partida.
+"
+
+Tienda
+
+",Objetos del inventario que desaparecen,"   
+Es posible que a algunos
+de vosotros os desaparezcan objetos del inventario. Somos conscientes del
+problema y trabajamos lo más deprisa posible para solucionarlo. Cuando hayamos
+solucionado la incidencia, recuperaréis todos los objetos que os hayan
+desaparecido.
+
+",Estamos trabajando para arreglar una incidencia por la que desaparecían cosas del inventario. Se recuperarán todos los objetos perdidos.
+Tienda,"
+
+Mantenimiento de la tienda
+
+",La tienda de League of Legends no está disponible debido a labores de mantenimiento programado.,"La tienda de League of Legends no está disponible
+debido a labores de mantenimiento programado."
+Tienda,"
+
+Mantenimiento de emergencia de la tienda
+
+","La tienda de League of Legends no está disponible
+debido a labores de mantenimiento para arreglar algunas incidencias que había
+al comprar.","La tienda de League of Legends no está disponible
+debido a labores de mantenimiento."
+Tienda,"
+
+No se puede comprar RP
+
+","Se ha desactivado la compra
+de Riot Points mientras solucionamos una incidencia de la tienda de League of Legends. Todavía se podrán
+desbloquear objetos gastando vuestros RP y PI actuales. ","Se ha desactivado la compra
+de Riot Points mientras solucionamos una incidencia de la tienda"
+"
+
+Modo de juego o característica deshabilitada
+
+",Colas clasificatorias en solitario/por parejas deshabilitadas,Es posible que algunos sufráis incidencias con las partidas clasificatorias en solitario/por parejas. Somos conscientes del problema y hemos deshabilitado de forma temporal la cola mientras trabajamos para solucionarlo. Las partidas normales siguen estando disponibles.,"Hemos deshabilitado las
+partidas clasificatorias en solitario/por parejas mientras solucionamos una
+incidencia con la cola. Las partidas normales y clasificatorias por equipos
+siguen estando disponibles."
+Modo de juego o característica deshabilitada,"
+
+Clasificatorias por equipos deshabilitadas
+
+",Es posible que algunos sufráis incidencias con las partidas clasificatorias por equipos. Somos conscientes del problema y hemos deshabilitado de forma temporal la cola mientras trabajamos para solucionarlo. Las partidas normales y clasificatorias en solitario/por parejas siguen estando disponibles.,Hemos deshabilitado las partidas clasificatorias por equipos mientras solucionamos una incidencia con la cola. Las partidas normales y clasificatorias en solitario/por parejas siguen estando disponibles.
+Modo de juego o característica deshabilitada,"
+
+Clasificatoria (3 contra 3) deshabilitadas
+
+","Es posible que algunos
+sufráis incidencias con las partidas clasificatorias 3 contra 3. Somos
+conscientes del problema y hemos deshabilitado de forma temporal la cola
+mientras trabajamos para solucionarlo. Las partidas normales y clasificatorias
+5 contra 5 siguen estando disponibles.",Hemos deshabilitado las partidas clasificatorias 3 contra 3 mientras solucionamos una incidencia con la cola. Las partidas normales y clasificatorias 5 contra 5 siguen estando disponibles.
+Modo de juego o característica deshabilitada,"
+
+Partidas clasificatorias deshabilitadas
+
+",Es posible que algunos sufráis incidencias con las partidas clasificatorias. Somos conscientes del problema y hemos deshabilitado de forma temporal la cola mientras trabajamos para solucionarlo. Las partidas normales siguen estando disponibles.,"Hemos deshabilitado las
+partidas clasificatorias mientras solucionamos una incidencia con la cola. Las
+partidas normales siguen estando disponibles."
+Modo de juego o característica deshabilitada,"
+
+Deshabilitado el modo reclutamiento en partidas normales
+
+","Es posible que algunos
+sufráis incidencias con las partidas de reclutamiento normales. Somos
+conscientes del problema y hemos deshabilitado de forma temporal la cola
+mientras trabajamos para solucionarlo. Las partidas normales de elección al
+azar y personalizadas siguen estando disponibles.","Hemos deshabilitado las
+partidas normales de reclutamiento mientras solucionamos una incidencia con la
+cola. Las partidas de elección al azar y personalizadas siguen estando
+disponibles."
+Modo de juego o característica deshabilitada,"
+
+Deshabilitadas las partidas normales de elección al azar
+
+",Es posible que algunos sufráis incidencias con las partidas normales de elección al azar. Somos conscientes del problema y hemos deshabilitado de forma temporal la cola mientras trabajamos para solucionarlo. Las partidas normales de reclutamiento y personalizadas siguen estando disponibles.,"Hemos deshabilitado las
+partidas normales de elección al azar mientras solucionamos una incidencia con
+la cola. Las partidas normales de reclutamiento y personalizadas siguen estando
+disponibles."
+Modo de juego o característica deshabilitada,Dominion deshabilitado,"Es posible que algunos
+sufráis incidencias con el modo de juego Dominion.
+Somos conscientes del problema y hemos deshabilitado de forma temporal la cola
+mientras trabajamos para solucionarlo. Todos los demás modos de juego siguen
+estando disponibles. ","        
+Hemos deshabilitado el
+modo de juego Dominion mientras
+solucionamos una incidencia con la cola. Todos los demás modos están
+disponibles.
+
+"
+Modo de juego o característica deshabilitada,"
+
+Bosque Retorcido deshabilitado
+
+","Es posible que algunos
+sufráis incidencias con las partidas en el Bosque Retorcido. Somos conscientes
+del problema y hemos deshabilitado de forma temporal la cola mientras
+trabajamos para solucionarlo. Todos los demás modos de juego siguen estando
+disponibles. ","Hemos deshabilitado las
+partidas en el Bosque Retorcido mientras solucionamos una incidencia con la
+cola. Todos los demás mapas están disponibles."
+Modo de juego o característica deshabilitada,"
+
+Partidas personalizadas deshabilitadas
+
+","Es posible que algunos
+sufráis incidencias con las partidas personalizadas. Somos conscientes del
+problema y hemos deshabilitado de forma temporal este modo de juego mientras
+trabajamos para solucionarlo. Todos los demás modos de juego siguen estando
+disponibles. ","Las partidas personalizadas
+de League of Legends no está
+disponible debido a labores de mantenimiento. Lo arreglaremos."
+Modo de juego o característica deshabilitada,"
+
+Emparejamiento deshabilitado
+
+","Es posible que algunos
+sufráis incidencias con el emparejamiento. Somos conscientes del problema y
+hemos deshabilitado las colas de emparejamiento mientras trabajamos para
+solucionarlo. Las partidas personalizadas siguen estando disponibles. ","   
+Hemos deshabilitado de
+forma temporal los emparejamientos mientras solucionamos una incidencia con la
+cola. Las partidas personalizadas siguen estando disponibles.
+
+"
+Modo de juego o característica deshabilitada,"
+
+Número mínimo de jugadores en las partidas personalizadas
+
+","Estamos experimentando una
+carga inusualmente grande en los servidores. Para descongestionar un poco el
+sistema, hemos limitado de forma temporal las partidas personalizadas a un
+número mínimo de NUMBER jugadores
+mientras solucionamos la incidencia.","Las partidas personalizadas
+están limitadas de forma temporal a un mínimo de NUMBER jugadores."
+"
+
+Incidencias en el chat
+
+",Mantenimiento de emergencia del chat,"El chat de League of Legends no está disponible
+debido a labores de mantenimiento. ",El chat no está disponible por mantenimiento.
+Incidencias en el chat,La lista de amigos no carga,Es posible que algunos sufráis incidencias al cargar vuestra lista de amigos. Somos conscientes del problema y trabajamos lo más deprisa posible para solucionarlo,"Estamos trabajando para
+arreglar una incidencia por la que no carga la lista de amigos."
+Incidencias en el chat,"
+
+Desconexión del chat
+
+","Es posible que algunos
+sufráis caídas intermitentes del chat. Somos conscientes del problema y
+trabajamos lo más deprisa posible para solucionarlo. Si os desconectáis del
+chat, usad el botón de Volver a conectar para restablecer la conexión.","Estamos trabajando para
+arreglar una incidencia por la que se desconecta el chat."
+Paro técnico/Incidencias de inicio de sesión,Incidencias generales de inicio de sesión,Algunos tenéis problemas para iniciar sesión. Somos conscientes del problema y trabajamos lo más deprisa posible para solucionarlo.,Estamos trabajando para arreglar una incidencia que puede causar que no podáis iniciar sesión.
+Paro técnico/Incidencias de inicio de sesión,Mantenimiento de emergencia,League of Legends no está disponible debido a labores de mantenimiento.,League of Legends no está disponible por mantenimiento.
+Paro técnico/Incidencias de inicio de sesión,Mantenimiento ampliado,Nos hemos topado con complicaciones inesperadas y vamos a ampliar la duración del mantenimiento.,Hemos ampliado la duración del mantenimiento.
+Paro técnico/Incidencias de inicio de sesión,Error de inicio de partidas,Algunos de vosotros habéis sufrido incidencias a la hora de iniciar la partida. Somos conscientes del problema y trabajamos lo más deprisa posible para solucionarlo.,Estamos trabajando para arreglar una incidencia que puede provocar que no podáis iniciar partida.
+Estamos trabajando para arreglar una incidencia por la que se os desconecta de las partidas de forma intermitente.,Desconexión,Es posible que algunos hayáis sufrido desconexiones de las partidas de forma intermitente. Somos conscientes del problema y trabajamos lo más deprisa posible para solucionarlo.,"Estamos trabajando para
+arreglar una incidencia por la que se os desconecta de las partidas de forma
+intermitente."
+Mantenimiento programado,Mantenimiento programado,League of Legends no está disponible debido a labores de mantenimiento programado.,League of Legends no está disponible debido a labores de mantenimiento programado.
+Mantenimiento programado,Mantenimiento ampliado,Hemos tenido incidencias con la versión y vamos a ampliar la duración del mantenimiento. ,Hemos ampliado la duración del mantenimiento programado.
